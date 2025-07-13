@@ -1,11 +1,20 @@
+
+"use client";
+
+import { useState, useEffect } from 'react';
 import { ProductCard } from '@/components/product-card';
 import { Button } from '@/components/ui/button';
 import { products } from '@/lib/mock-data';
 import type { Product } from '@/lib/types';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Apple, Watch, Laptop, Smartphone, Speaker } from 'lucide-react';
+import { ArrowRight, Laptop, Smartphone, Speaker, Watch } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const categories = [
     { name: 'Phones', icon: <Smartphone className="h-8 w-8" /> },
@@ -19,20 +28,46 @@ export default function Home() {
   const bestSellers = products.slice(5, 10);
   const newArrivals = products.slice(10, 15);
 
+  const [banners, setBanners] = useState({
+    main: "https://placehold.co/800x400",
+    sub1: "https://placehold.co/400x200",
+    sub2: "https://placehold.co/400x200",
+  });
+  const [loadingBanners, setLoadingBanners] = useState(true);
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const docRef = doc(db, "siteContent", "banners");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setBanners(docSnap.data().urls);
+        }
+      } catch (error) {
+        console.error("Error fetching banners:", error);
+      } finally {
+        setLoadingBanners(false);
+      }
+    };
+    fetchBanners();
+  }, []);
+
   return (
     <div className="bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <section className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="relative col-span-1 h-64 w-full rounded-lg bg-card p-8 text-white shadow-lg lg:col-span-2 lg:h-auto">
-            <Image
-              src="https://placehold.co/800x400"
-              alt="iPhone 14 Pro Max"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg"
-              data-ai-hint="phone banner"
-            />
+          <div className="relative col-span-1 h-64 w-full rounded-lg bg-card p-8 shadow-lg lg:col-span-2 lg:h-auto">
+            {loadingBanners ? <Skeleton className="w-full h-full rounded-lg"/> : (
+              <Image
+                src={banners.main}
+                alt="iPhone 14 Pro Max"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg"
+                data-ai-hint="phone banner"
+              />
+            )}
             <div className="relative z-10 flex h-full flex-col justify-end">
               <h1 className="font-headline text-4xl font-bold tracking-tighter text-black sm:text-5xl md:text-6xl">
                 iPhone 14 Pro Max
@@ -43,37 +78,41 @@ export default function Home() {
             </div>
           </div>
           <div className="col-span-1 space-y-6">
-            <div className="relative h-48 w-full rounded-lg bg-card p-6 text-white shadow-lg">
-                <Image
-                src="https://placehold.co/400x200"
-                alt="iPhone 15 Pro"
-                layout="fill"
-                objectFit="cover"
-                className="rounded-lg"
-                data-ai-hint="phone banner"
-                />
-                 <div className="relative z-10">
-                    <h2 className="font-headline text-2xl font-bold text-black">iPhone 15 Pro</h2>
-                    <Button asChild variant="secondary" className="mt-2">
-                        <Link href="#">Shop Now</Link>
-                    </Button>
-                 </div>
+            <div className="relative h-48 w-full rounded-lg bg-card p-6 shadow-lg">
+              {loadingBanners ? <Skeleton className="w-full h-full rounded-lg"/> : (
+                  <Image
+                  src={banners.sub1}
+                  alt="iPhone 15 Pro"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-lg"
+                  data-ai-hint="phone banner"
+                  />
+              )}
+               <div className="relative z-10">
+                  <h2 className="font-headline text-2xl font-bold text-black">iPhone 15 Pro</h2>
+                  <Button asChild variant="secondary" className="mt-2">
+                      <Link href="#">Shop Now</Link>
+                  </Button>
+               </div>
             </div>
-            <div className="relative h-48 w-full rounded-lg bg-card p-6 text-white shadow-lg">
-                <Image
-                src="https://placehold.co/400x200"
-                alt="iPhone 15"
-                layout="fill"
-                objectFit="cover"
-                className="rounded-lg"
-                data-ai-hint="phone banner"
-                />
-                <div className="relative z-10">
-                    <h2 className="font-headline text-2xl font-bold text-black">iPhone 15</h2>
-                     <Button asChild variant="secondary" className="mt-2">
-                        <Link href="#">Shop Now</Link>
-                    </Button>
-                </div>
+            <div className="relative h-48 w-full rounded-lg bg-card p-6 shadow-lg">
+              {loadingBanners ? <Skeleton className="w-full h-full rounded-lg"/> : (
+                  <Image
+                  src={banners.sub2}
+                  alt="iPhone 15"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-lg"
+                  data-ai-hint="phone banner"
+                  />
+              )}
+              <div className="relative z-10">
+                  <h2 className="font-headline text-2xl font-bold text-black">iPhone 15</h2>
+                   <Button asChild variant="secondary" className="mt-2">
+                      <Link href="#">Shop Now</Link>
+                  </Button>
+              </div>
             </div>
           </div>
         </section>
@@ -214,7 +253,3 @@ export default function Home() {
     </div>
   );
 }
-
-// Add Card, CardHeader, CardContent, CardTitle, CardFooter to prevent component not defined error
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';

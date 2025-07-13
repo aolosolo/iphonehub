@@ -1,9 +1,10 @@
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Package, ClipboardList, Users } from "lucide-react";
+import { Package, ClipboardList, Users, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -38,7 +39,7 @@ export default function AdminPage() {
           <p className="text-muted-foreground">
             Manage your products, orders, and users from here.
           </p>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">Manage Products</CardTitle>
@@ -64,6 +65,15 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent>
                     <Button asChild className="w-full"><Link href="#">Go to Users</Link></Button>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Manage Banners</CardTitle>
+                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <Button asChild className="w-full"><Link href="/admin/banners">Go to Banners</Link></Button>
                 </CardContent>
             </Card>
           </div>
