@@ -1,9 +1,32 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Package, ClipboardList, Users } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function AdminPage() {
+  const { user, isAdmin, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && (!user || !isAdmin)) {
+      router.push('/');
+    }
+  }, [user, isAdmin, loading, router]);
+
+  if (loading || !user || !isAdmin) {
+    return (
+        <div className="container mx-auto px-4 py-12">
+            <h1 className="mb-8 font-headline text-4xl font-bold">Admin Dashboard</h1>
+            <p>Loading or redirecting...</p>
+        </div>
+    );
+  }
+  
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="mb-8 font-headline text-4xl font-bold">Admin Dashboard</h1>
