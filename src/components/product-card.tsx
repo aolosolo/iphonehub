@@ -40,22 +40,19 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             width={400}
             height={400}
-            className="h-64 w-full object-cover"
+            className="h-48 w-full object-cover"
             data-ai-hint="phone product"
           />
         </Link>
       </CardHeader>
       <CardContent className="flex-grow p-4">
         <Link href={`/products/${product.id}`}>
-          <CardTitle className="mb-2 text-xl font-headline hover:text-primary">{product.name}</CardTitle>
+          <CardTitle className="mb-2 text-md font-headline hover:text-primary h-10">{product.name}</CardTitle>
         </Link>
-        <p className="text-2xl font-semibold">${product.price}</p>
+        <p className="text-xl font-semibold">${product.price.toFixed(2)}</p>
       </CardContent>
-      <CardFooter className="flex justify-between p-4">
-        <Button asChild variant="outline">
-          <Link href={`/products/${product.id}`}>View Details</Link>
-        </Button>
-        <Button onClick={handleAddToCart}>
+      <CardFooter className="p-4">
+        <Button onClick={handleAddToCart} className="w-full">
           <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
         </Button>
       </CardFooter>

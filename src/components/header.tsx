@@ -5,6 +5,7 @@ import {
   ShoppingCart,
   User,
   Menu,
+  Search,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,15 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Icons } from "./icons";
 import { useCart } from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
+import { Input } from "./ui/input";
+
+const navLinks = [
+    { href: "/", label: "Laptops" },
+    { href: "/", label: "Desktop PCs" },
+    { href: "/", label: "Networking Devices" },
+    { href: "/", label: "PC Parts" },
+    { href: "/", label: "Repairs" },
+]
 
 export function Header() {
   const { cart } = useCart();
@@ -32,23 +42,30 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
+      <div className="container flex h-20 items-center">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Icons.logo className="h-6 w-6" />
-            <span className="hidden font-bold sm:inline-block font-headline">
+            <Icons.logo className="h-8 w-8 text-primary" />
+            <span className="hidden font-bold sm:inline-block font-headline text-2xl">
               iPhoneHub
             </span>
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            <Link
-              href="/"
-              className="transition-colors hover:text-foreground/80 text-foreground"
-            >
-              Shop
-            </Link>
-          </nav>
         </div>
+        
+        <div className="hidden md:flex flex-1 items-center justify-center">
+             <nav className="flex items-center space-x-6 text-sm font-medium">
+                {navLinks.map(link => (
+                     <Link
+                        key={link.label}
+                        href={link.href}
+                        className="transition-colors hover:text-foreground/80 text-foreground"
+                        >
+                        {link.label}
+                    </Link>
+                ))}
+             </nav>
+        </div>
+
 
         <Sheet>
           <SheetTrigger asChild>
@@ -63,17 +80,25 @@ export function Header() {
                 <Icons.logo className="h-6 w-6" />
                 <span className="font-bold font-headline">iPhoneHub</span>
               </Link>
-              <Link
-                href="/"
-                className="transition-colors hover:text-foreground/80 text-foreground"
-              >
-                Shop
-              </Link>
+              {navLinks.map(link => (
+                     <Link
+                        key={link.label}
+                        href={link.href}
+                        className="transition-colors hover:text-foreground/80 text-foreground"
+                        >
+                        {link.label}
+                    </Link>
+                ))}
             </nav>
           </SheetContent>
         </Sheet>
         
         <div className="flex flex-1 items-center justify-end space-x-2">
+          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
+            <Search className="h-5 w-5" />
+            <span className="sr-only">Search</span>
+          </Button>
+
           <Button variant="ghost" size="icon" asChild>
             <Link href="/cart">
               <ShoppingCart className="h-5 w-5" />
