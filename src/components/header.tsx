@@ -6,6 +6,7 @@ import {
   User,
   Menu,
   Search,
+  LogOut,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -15,12 +16,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Icons } from "./icons";
 import { useCart } from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
-import { Input } from "./ui/input";
+import { useAuth } from "@/hooks/use-auth";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
     { href: "/", label: "Laptops" },
@@ -32,11 +37,18 @@ const navLinks = [
 
 export function Header() {
   const { cart } = useCart();
+  const { user } = useAuth();
+  const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/');
+  };
 
   const itemCount = isMounted ? cart.reduce((total, item) => total + item.quantity, 0) : 0;
 
@@ -119,19 +131,34 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard">Dashboard</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin">Admin</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/login">Login</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/signup">Sign Up</Link>
-              </DropdownMenuItem>
+              {user ? (
+                <>
+                  <DropdownMenuLabel>
+                    Hi, {user.displayName || user.email}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard">Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">Admin</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link href="/login">Login</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/signup">Sign Up</Link>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
