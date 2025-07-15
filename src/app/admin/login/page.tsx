@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "admin@iphonehub.com",
+      email: "",
       password: "",
     },
   });
@@ -105,7 +105,7 @@ export default function AdminLoginPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="admin@iphonehub.com" {...field} readOnly />
+                      <Input placeholder="admin@iphonehub.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
