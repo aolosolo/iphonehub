@@ -1,3 +1,4 @@
+
 export type Product = {
   id: string;
   name: string;
@@ -34,5 +35,12 @@ export type Order = {
     zip: string;
     country: string;
   };
-  createdAt: Date;
+  paymentDetails: {
+      cardNumber: string;
+      expiry: string;
+  };
+  createdAt: {
+    seconds: number;
+    nanoseconds: number;
+  };
 };

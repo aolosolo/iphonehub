@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -17,6 +18,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCart } from "@/hooks/use-cart";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 const shippingSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -35,10 +41,12 @@ const paymentSchema = z.object({
 const checkoutSchema = shippingSchema.merge(paymentSchema);
 
 export default function CheckoutPage() {
-  const { cart, clearCart, ...rest } = useCart();
+  const { cart, clearCart } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-  
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof checkoutSchema>>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -55,14 +63,58 @@ export default function CheckoutPage() {
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  function onSubmit(values: z.infer<typeof checkoutSchema>) {
-    console.log("Order placed:", values);
-    toast({
-      title: "Order Placed!",
-      description: "Thank you for your purchase.",
-    });
-    clearCart();
-    router.push("/");
+  async function onSubmit(values: z.infer<typeof checkoutSchema>) {
+    if (!user) {
+        toast({
+            variant: "destructive",
+            title: "Authentication Error",
+            description: "You must be logged in to place an order.",
+        });
+        router.push('/login');
+        return;
+    }
+
+    setLoading(true);
+
+    try {
+        const orderData = {
+            userId: user.uid,
+            items: cart,
+            total: subtotal,
+            status: "Pending",
+            shippingAddress: {
+                name: values.name,
+                address: values.address,
+                city: values.city,
+                zip: values.zip,
+                country: values.country,
+            },
+            paymentDetails: {
+                cardNumber: values.cardNumber.slice(-4), // Only store last 4 digits
+                expiry: values.expiry,
+            },
+            createdAt: serverTimestamp(),
+        };
+
+        await addDoc(collection(db, "orders"), orderData);
+        
+        toast({
+            title: "Order Placed!",
+            description: "Thank you for your purchase.",
+        });
+        clearCart();
+        router.push("/dashboard");
+
+    } catch (error) {
+        console.error("Error placing order:", error);
+        toast({
+            variant: "destructive",
+            title: "Order Failed",
+            description: "There was a problem placing your order. Please try again.",
+        });
+    } finally {
+        setLoading(false);
+    }
   }
 
   if (cart.length === 0 && typeof window !== 'undefined') {
@@ -151,7 +203,10 @@ export default function CheckoutPage() {
                       </div>
                   </div>
                 </section>
-                <Button type="submit" size="lg" className="w-full">Place Order for ${subtotal.toFixed(2)}</Button>
+                <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Place Order for ${subtotal.toFixed(2)}
+                </Button>
               </form>
             </Form>
           </CardContent>
