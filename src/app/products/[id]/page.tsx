@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -10,11 +11,12 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, Minus, Plus, ShoppingCart } from "lucide-react";
 
 export default function ProductPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const product = products.find((p) => p.id === params.id);
+  const product = products.find((p) => p.id === id);
 
   if (!product) {
     notFound();
