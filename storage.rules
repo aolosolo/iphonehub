@@ -1,0 +1,19 @@
+
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // By default, deny all reads and writes
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Allow anyone to read images in the 'banners' folder
+    match /banners/{fileName} {
+      allow read: if true;
+      // Only the admin can upload (write) or delete banners
+      allow write: if request.auth.token.email == 'admin@iphonehub.com';
+    }
+  }
+}
