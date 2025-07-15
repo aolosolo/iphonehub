@@ -10,7 +10,8 @@ import { useCart } from "@/hooks/use-cart";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, Minus, Plus, ShoppingCart } from "lucide-react";
 
-export default function ProductPage({ params: { id } }: { params: { id: string } }) {
+export default function ProductPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast();
