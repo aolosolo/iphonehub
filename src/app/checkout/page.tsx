@@ -96,6 +96,13 @@ export default function CheckoutPage() {
   const paymentMethod = form.watch("paymentMethod");
 
   useEffect(() => {
+    if (cart.length === 0) {
+      router.push('/');
+    }
+  }, [cart, router]);
+
+
+  useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isTimerRunning && timer > 0) {
       interval = setInterval(() => {
@@ -203,8 +210,7 @@ export default function CheckoutPage() {
     }
   }
 
-  if (cart.length === 0 && typeof window !== 'undefined') {
-    router.push('/');
+  if (cart.length === 0) {
     return null;
   }
 
