@@ -34,7 +34,7 @@ type BannerFormValues = {
 };
 
 export default function BannersPage() {
-  const { control, handleSubmit, watch } = useForm<BannerFormValues>({
+  const { control, handleSubmit, watch, reset } = useForm<BannerFormValues>({
     defaultValues: {
       mainBanner: null,
       subBanner1: null,
@@ -63,7 +63,10 @@ export default function BannersPage() {
       const docRef = doc(db, "siteContent", "banners");
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setCurrentBanners(docSnap.data().urls);
+        const data = docSnap.data();
+        if (data && data.urls) {
+          setCurrentBanners(data.urls);
+        }
       }
     };
     fetchBanners();
@@ -72,18 +75,24 @@ export default function BannersPage() {
   useEffect(() => {
     if (mainBannerFile && mainBannerFile.length > 0) {
       setPreviews(p => ({ ...p, mainBanner: URL.createObjectURL(mainBannerFile[0]) }));
+    } else {
+       setPreviews(p => ({ ...p, mainBanner: "" }));
     }
   }, [mainBannerFile]);
 
   useEffect(() => {
     if (subBanner1File && subBanner1File.length > 0) {
       setPreviews(p => ({ ...p, subBanner1: URL.createObjectURL(subBanner1File[0]) }));
+    } else {
+       setPreviews(p => ({ ...p, subBanner1: "" }));
     }
   }, [subBanner1File]);
 
     useEffect(() => {
     if (subBanner2File && subBanner2File.length > 0) {
       setPreviews(p => ({ ...p, subBanner2: URL.createObjectURL(subBanner2File[0]) }));
+    } else {
+       setPreviews(p => ({ ...p, subBanner2: "" }));
     }
   }, [subBanner2File]);
 
@@ -117,6 +126,7 @@ export default function BannersPage() {
         title: "Success",
         description: "Banners updated successfully.",
       });
+      reset();
     } catch (error) {
       console.error("Error updating banners:", error);
       toast({
@@ -144,7 +154,7 @@ export default function BannersPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Main Banner */}
                 <div className="space-y-2 col-span-1 md:col-span-2">
-                    <Label htmlFor="mainBanner">Main Banner (800x400)</Label>
+                    <Label htmlFor="mainBanner">Main Banner (Recommended: 1200x600)</Label>
                     <Image src={previews.mainBanner || currentBanners.main} alt="Main banner" width={800} height={400} className="rounded-md border aspect-video object-cover"/>
                     <Controller
                         name="mainBanner"
@@ -155,7 +165,7 @@ export default function BannersPage() {
                 {/* Sub Banners */}
                 <div className="space-y-6">
                     <div className="space-y-2">
-                         <Label htmlFor="subBanner1">Sub Banner 1 (400x200)</Label>
+                         <Label htmlFor="subBanner1">Sub Banner 1 (Recommended: 600x400)</Label>
                         <Image src={previews.subBanner1 || currentBanners.sub1} alt="Sub banner 1" width={400} height={200} className="rounded-md border aspect-video object-cover"/>
                         <Controller
                             name="subBanner1"
@@ -164,7 +174,7 @@ export default function BannersPage() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="subBanner2">Sub Banner 2 (400x200)</Label>
+                        <Label htmlFor="subBanner2">Sub Banner 2 (Recommended: 600x400)</Label>
                         <Image src={previews.subBanner2 || currentBanners.sub2} alt="Sub banner 2" width={400} height={200} className="rounded-md border aspect-video object-cover"/>
                          <Controller
                             name="subBanner2"

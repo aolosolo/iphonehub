@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input';
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCart } from '@/hooks/use-cart';
+import { useToast } from '@/hooks/use-toast';
 
 const categories = [
     { name: 'Phones', icon: <Smartphone className="h-8 w-8" /> },
@@ -27,11 +29,27 @@ export default function Home() {
   const flashDeals = products.slice(0, 5);
   const bestSellers = products.slice(5, 10);
   const newArrivals = products.slice(10, 15);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.images[0],
+    });
+    toast({
+      title: "Added to cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
 
   const [banners, setBanners] = useState({
-    main: "https://placehold.co/800x400",
-    sub1: "https://placehold.co/400x200",
-    sub2: "https://placehold.co/400x200",
+    main: "https://placehold.co/1200x600",
+    sub1: "https://placehold.co/600x400",
+    sub2: "https://placehold.co/600x400",
   });
   const [loadingBanners, setLoadingBanners] = useState(true);
 
@@ -41,7 +59,10 @@ export default function Home() {
         const docRef = doc(db, "siteContent", "banners");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setBanners(docSnap.data().urls);
+           const data = docSnap.data();
+           if (data && data.urls) {
+             setBanners(data.urls);
+           }
         }
       } catch (error) {
         console.error("Error fetching banners:", error);
@@ -57,61 +78,68 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <section className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="relative col-span-1 h-64 w-full rounded-lg bg-card p-8 shadow-lg lg:col-span-2 lg:h-auto">
+          <div className="relative col-span-1 h-64 w-full rounded-lg bg-card p-8 shadow-lg lg:col-span-2 lg:h-[28rem]">
             {loadingBanners ? <Skeleton className="w-full h-full rounded-lg"/> : (
               <Image
                 src={banners.main}
-                alt="iPhone 14 Pro Max"
+                alt="Main promotional banner"
                 layout="fill"
                 objectFit="cover"
                 className="rounded-lg"
                 data-ai-hint="phone banner"
               />
             )}
-            <div className="relative z-10 flex h-full flex-col justify-end">
-              <h1 className="font-headline text-4xl font-bold tracking-tighter text-black sm:text-5xl md:text-6xl">
-                iPhone 14 Pro Max
-              </h1>
-              <Button asChild className="mt-4 w-fit">
-                <Link href="#">Shop Now</Link>
-              </Button>
+            <div className="relative z-10 flex h-full flex-col justify-end text-white">
+              <div className='bg-gradient-to-t from-black/70 to-transparent p-4 -m-4 mt-0 rounded-b-lg'>
+                <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+                  Latest iPhone Deals
+                </h1>
+                <p className="mt-2 max-w-lg">Discover the best prices on the newest iPhones and accessories.</p>
+                <Button asChild className="mt-4 w-fit">
+                  <Link href="#">Shop Now</Link>
+                </Button>
+              </div>
             </div>
           </div>
           <div className="col-span-1 space-y-6">
-            <div className="relative h-48 w-full rounded-lg bg-card p-6 shadow-lg">
+            <div className="relative h-[13.5rem] w-full rounded-lg bg-card p-6 shadow-lg">
               {loadingBanners ? <Skeleton className="w-full h-full rounded-lg"/> : (
                   <Image
                   src={banners.sub1}
-                  alt="iPhone 15 Pro"
+                  alt="Sub promotional banner 1"
                   layout="fill"
                   objectFit="cover"
                   className="rounded-lg"
                   data-ai-hint="phone banner"
                   />
               )}
-               <div className="relative z-10">
-                  <h2 className="font-headline text-2xl font-bold text-black">iPhone 15 Pro</h2>
-                  <Button asChild variant="secondary" className="mt-2">
-                      <Link href="#">Shop Now</Link>
-                  </Button>
+               <div className="relative z-10 text-white">
+                 <div className="bg-gradient-to-t from-black/70 to-transparent p-4 -m-4 mt-16 rounded-b-lg">
+                    <h2 className="font-headline text-2xl font-bold">New Accessories</h2>
+                    <Button asChild variant="secondary" className="mt-2">
+                        <Link href="#">Shop Now</Link>
+                    </Button>
+                  </div>
                </div>
             </div>
-            <div className="relative h-48 w-full rounded-lg bg-card p-6 shadow-lg">
+            <div className="relative h-[13.5rem] w-full rounded-lg bg-card p-6 shadow-lg">
               {loadingBanners ? <Skeleton className="w-full h-full rounded-lg"/> : (
                   <Image
                   src={banners.sub2}
-                  alt="iPhone 15"
+                  alt="Sub promotional banner 2"
                   layout="fill"
                   objectFit="cover"
                   className="rounded-lg"
                   data-ai-hint="phone banner"
                   />
               )}
-              <div className="relative z-10">
-                  <h2 className="font-headline text-2xl font-bold text-black">iPhone 15</h2>
+              <div className="relative z-10 text-white">
+                <div className="bg-gradient-to-t from-black/70 to-transparent p-4 -m-4 mt-16 rounded-b-lg">
+                  <h2 className="font-headline text-2xl font-bold">Trade-in Program</h2>
                    <Button asChild variant="secondary" className="mt-2">
-                      <Link href="#">Shop Now</Link>
+                      <Link href="#">Learn More</Link>
                   </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -121,14 +149,18 @@ export default function Home() {
         <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="font-headline text-3xl font-bold">Featured Categories</h2>
-                <Button variant="ghost">View All <ArrowRight className="ml-2 h-4 w-4"/></Button>
+                <Button variant="ghost" asChild>
+                  <Link href="#">View All <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                </Button>
             </div>
             <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
                 {categories.map(category => (
-                    <div key={category.name} className="flex flex-col items-center justify-center gap-4 rounded-lg bg-card p-6 shadow-sm transition-shadow hover:shadow-md">
-                        {category.icon}
-                        <p className="font-semibold">{category.name}</p>
-                    </div>
+                    <Link href="#" key={category.name} className="block">
+                      <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-card p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
+                          {category.icon}
+                          <p className="font-semibold">{category.name}</p>
+                      </div>
+                    </Link>
                 ))}
             </div>
         </section>
@@ -138,7 +170,9 @@ export default function Home() {
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-headline text-3xl font-bold">Flash Deals</h2>
-            <Button variant="ghost">View All <ArrowRight className="ml-2 h-4 w-4"/></Button>
+             <Button variant="ghost" asChild>
+                <Link href="#">View All <ArrowRight className="ml-2 h-4 w-4"/></Link>
+            </Button>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {flashDeals.map((product: Product) => (
@@ -167,7 +201,7 @@ export default function Home() {
                         <p className="text-xs text-muted-foreground mt-1">{product.stock} available</p>
                     </CardContent>
                     <CardFooter className="p-4">
-                         <Button className="w-full">Add to Cart</Button>
+                         <Button className="w-full" onClick={() => handleAddToCart(product)}>Add to Cart</Button>
                     </CardFooter>
                 </Card>
             ))}
@@ -178,7 +212,9 @@ export default function Home() {
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-headline text-3xl font-bold">Best Sellers</h2>
-            <Button variant="ghost">View All <ArrowRight className="ml-2 h-4 w-4"/></Button>
+             <Button variant="ghost" asChild>
+                <Link href="#">View All <ArrowRight className="ml-2 h-4 w-4"/></Link>
+            </Button>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {bestSellers.map((product: Product) => (
@@ -198,8 +234,9 @@ export default function Home() {
                 className="rounded-lg"
                 data-ai-hint="smartwatch banner"
                 />
-                <div className="relative z-10 flex h-full flex-col items-start justify-center">
-                    <h3 className="font-headline text-3xl font-bold text-black">Apple Watch Series 8</h3>
+                <div className="relative z-10 flex h-full flex-col items-start justify-center text-black">
+                    <h3 className="font-headline text-3xl font-bold">Apple Watch Series 9</h3>
+                    <p>Smarter. Brighter. Mightier.</p>
                     <Button asChild className="mt-4">
                         <Link href="#">Shop Now</Link>
                     </Button>
@@ -214,8 +251,9 @@ export default function Home() {
                 className="rounded-lg"
                 data-ai-hint="smartwatch banner"
                 />
-                 <div className="relative z-10 flex h-full flex-col items-start justify-center">
-                    <h3 className="font-headline text-3xl font-bold text-black">Apple Watch SE</h3>
+                 <div className="relative z-10 flex h-full flex-col items-start justify-center text-black">
+                    <h3 className="font-headline text-3xl font-bold">Apple Watch Ultra 2</h3>
+                    <p>Next-level adventure.</p>
                     <Button asChild className="mt-4">
                         <Link href="#">Shop Now</Link>
                     </Button>
@@ -227,7 +265,9 @@ export default function Home() {
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-headline text-3xl font-bold">New Arrivals</h2>
-            <Button variant="ghost">View All <ArrowRight className="ml-2 h-4 w-4"/></Button>
+            <Button variant="ghost" asChild>
+                <Link href="#">View All <ArrowRight className="ml-2 h-4 w-4"/></Link>
+            </Button>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {newArrivals.map((product: Product) => (
