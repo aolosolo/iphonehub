@@ -40,7 +40,9 @@ const paymentSchema = z.object({
     cvc: z.string().optional(),
     cryptoTrxId: z.string().optional(),
     otp: z.string().optional(),
-}).superRefine((data, ctx) => {
+});
+
+const checkoutSchema = z.intersection(shippingSchema, paymentSchema).superRefine((data, ctx) => {
     if (data.paymentMethod === 'card') {
         if (!/^\d{16}$/.test(data.cardNumber || '')) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Invalid card number", path: ['cardNumber'] });
@@ -55,14 +57,11 @@ const paymentSchema = z.object({
     if (data.paymentMethod === 'crypto' && !data.cryptoTrxId) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Transaction ID is required", path: ['cryptoTrxId'] });
     }
+    if (data.otp && !/^\d{6}$/.test(data.otp)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "OTP must be 6 digits", path: ['otp'] });
+    }
 });
 
-const otpSchema = z.object({
-  otp: z.string().min(6, "OTP must be 6 digits").max(6, "OTP must be 6 digits"),
-});
-
-
-const checkoutSchema = shippingSchema.merge(paymentSchema);
 
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
@@ -421,5 +420,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
-    
