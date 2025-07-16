@@ -4,10 +4,12 @@
 import { ProductCard } from '@/components/product-card';
 import { products } from '@/lib/mock-data';
 import type { Product } from '@/lib/types';
+import { HeroBanners } from '@/components/hero-banners';
 
 export default function Home() {
   return (
     <div className="bg-background">
+      <HeroBanners />
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8 text-center">
             <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
