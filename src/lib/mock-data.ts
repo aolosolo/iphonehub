@@ -212,4 +212,18 @@ export const products: Product[] = [
     features: ['A15 Bionic chip', '4K High Frame Rate HDR', 'Siri Remote', 'Acts as a home hub'],
     stock: 90,
   },
+  {
+    id: 'iphone-12-pro',
+    name: 'iPhone 12 Pro',
+    description: 'A superb new design, 5G, and a Ceramic Shield display. The A14 Bionic chip is the fastest in a smartphone.',
+    price: 899,
+    images: ['https://ipoint.ae/cdn/shop/files/PacificBlue.webp?v=1736117351&width=1066'],
+    specs: {
+      storage: '128GB',
+      color: 'Pacific Blue',
+      display: '6.1-inch Super Retina XDR display',
+    },
+    features: ['A14 Bionic Chip', 'Pro camera system', 'Ceramic Shield', '5G capable'],
+    stock: 88,
+  },
 ];
