@@ -31,6 +31,20 @@ export const products: Product[] = [
     stock: 75,
   },
   {
+    id: 'iphone-14-pro-max',
+    name: 'iPhone 14 Pro Max',
+    description: 'A magical new way to interact with iPhone. Groundbreaking safety features designed to save lives. An innovative 48MP camera for mind-blowing detail. All powered by the ultimate smartphone chip.',
+    price: 1099,
+    images: ['https://ipoint.ae/cdn/shop/files/New_iphone_14_pro_max_offer_banner.jpg?v=1743450038&width=2100'],
+    specs: {
+      storage: '256GB',
+      color: 'Deep Purple',
+      display: '6.7-inch Super Retina XDR display',
+    },
+    features: ['Dynamic Island', 'A16 Bionic Chip', 'Pro camera system (48MP Main)', 'Always-On display'],
+    stock: 60,
+  },
+  {
     id: 'iphone-14',
     name: 'iPhone 14',
     description: 'A huge leap in battery life. A new, more advanced dual-camera system. A15 Bionic, the fastest chip in a smartphone.',
@@ -43,6 +57,20 @@ export const products: Product[] = [
     },
     features: ['A15 Bionic Chip', 'Dual-camera system', 'Emergency SOS via satellite', 'Ceramic Shield'],
     stock: 100,
+  },
+   {
+    id: 'iphone-13-pro-max',
+    name: 'iPhone 13 Pro Max',
+    description: 'A dramatically more powerful camera system. A display so responsive, every interaction feels new again. The world’s fastest smartphone chip. Exceptional durability. And a huge leap in battery life.',
+    price: 899,
+    images: ['https://ipoint.ae/cdn/shop/files/iphone_13_pro_max_1.png?v=1740151679&width=430'],
+    specs: {
+        storage: '256GB',
+        color: 'Sierra Blue',
+        display: '6.7-inch Super Retina XDR display with ProMotion',
+    },
+    features: ['ProMotion technology', 'A15 Bionic chip', 'Pro camera system', 'Cinematic mode'],
+    stock: 90,
   },
   {
     id: 'iphone-se',
@@ -226,4 +254,18 @@ export const products: Product[] = [
     features: ['A14 Bionic Chip', 'Pro camera system', 'Ceramic Shield', '5G capable'],
     stock: 88,
   },
+  {
+    id: 'iphone-16-pro-max',
+    name: 'iPhone 16 Pro Max',
+    description: 'The next generation of iPhone is here, with a groundbreaking new camera system, the A18 chip, and an even more stunning display.',
+    price: 1199,
+    images: ['https://ipoint.ae/cdn/shop/files/iPhone_16_pro_max_1.png?v=1740152531&width=430'],
+    specs: {
+      storage: '256GB',
+      color: 'Titanium Blue',
+      display: '6.9-inch Super Retina XDR display with ProMotion',
+    },
+    features: ['A18 Bionic Chip', 'Tetraprism Telephoto lens', 'Action button', 'Thinner bezels'],
+    stock: 50,
+  }
 ];
