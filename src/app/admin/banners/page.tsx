@@ -44,9 +44,9 @@ export default function BannersPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [currentBanners, setCurrentBanners] = useState({
-    main: "https://placehold.co/800x400",
-    sub1: "https://placehold.co/400x200",
-    sub2: "https://placehold.co/400x200",
+    main: "https://ipoint.ae/cdn/shop/files/New_iphone_14_pro_max_offer_banner.jpg?v=1743450038&width=2100",
+    sub1: "https://ipoint.ae/cdn/shop/files/iPhone_16_pro_max_1.png?v=1740152531&width=430",
+    sub2: "https://ipoint.ae/cdn/shop/files/iphone_13_pro_max_1.png?v=1740151679&width=430",
   });
   const [previews, setPreviews] = useState({
     mainBanner: "",

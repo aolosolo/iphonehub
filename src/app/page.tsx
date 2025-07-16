@@ -47,9 +47,9 @@ export default function Home() {
   };
 
   const [banners, setBanners] = useState({
-    main: "https://placehold.co/1200x600",
-    sub1: "https://placehold.co/600x400",
-    sub2: "https://placehold.co/600x400",
+    main: "https://ipoint.ae/cdn/shop/files/New_iphone_14_pro_max_offer_banner.jpg?v=1743450038&width=2100",
+    sub1: "https://ipoint.ae/cdn/shop/files/iPhone_16_pro_max_1.png?v=1740152531&width=430",
+    sub2: "https://ipoint.ae/cdn/shop/files/iphone_13_pro_max_1.png?v=1740151679&width=430",
   });
   const [loadingBanners, setLoadingBanners] = useState(true);
 
@@ -83,7 +83,7 @@ export default function Home() {
               <Image
                 src={banners.main}
                 alt="Main promotional banner"
-                layout="fill"
+                fill
                 objectFit="cover"
                 className="rounded-lg"
                 data-ai-hint="phone banner"
@@ -107,7 +107,7 @@ export default function Home() {
                   <Image
                   src={banners.sub1}
                   alt="Sub promotional banner 1"
-                  layout="fill"
+                  fill
                   objectFit="cover"
                   className="rounded-lg"
                   data-ai-hint="phone banner"
@@ -127,7 +127,7 @@ export default function Home() {
                   <Image
                   src={banners.sub2}
                   alt="Sub promotional banner 2"
-                  layout="fill"
+                  fill
                   objectFit="cover"
                   className="rounded-lg"
                   data-ai-hint="phone banner"
@@ -229,7 +229,7 @@ export default function Home() {
                 <Image
                 src="https://placehold.co/600x300"
                 alt="Apple Watch Series 8"
-                layout="fill"
+                fill
                 objectFit="cover"
                 className="rounded-lg"
                 data-ai-hint="smartwatch banner"
@@ -246,7 +246,7 @@ export default function Home() {
                 <Image
                 src="https://placehold.co/600x300"
                 alt="Apple Watch SE"
-                layout="fill"
+                fill
                 objectFit="cover"
                 className="rounded-lg"
                 data-ai-hint="smartwatch banner"
