@@ -1,3 +1,4 @@
+
 import type { Product } from './types';
 
 export const products: Product[] = [
@@ -267,5 +268,33 @@ export const products: Product[] = [
     },
     features: ['A18 Bionic Chip', 'Tetraprism Telephoto lens', 'Action button', 'Thinner bezels'],
     stock: 50,
+  },
+  {
+    id: 'iphone-xr',
+    name: 'iPhone XR With Facetime - International Version',
+    description: 'A brilliant 6.1-inch Liquid Retina display, Face ID, and the powerful A12 Bionic chip.',
+    price: 499,
+    images: ['https://ipoint.ae/cdn/shop/files/2_a3e805cf-247b-4fd4-ae37-96757c3cb550.webp?v=1736117390&width=1066'],
+    specs: {
+      storage: '64GB',
+      color: 'Black',
+      display: '6.1-inch Liquid Retina HD display',
+    },
+    features: ['A12 Bionic chip', 'Face ID', 'Advanced single-camera system', 'Splash, Water, and Dust Resistant'],
+    stock: 7,
+  },
+  {
+    id: 'samsung-z-flip4',
+    name: 'SAMSUNG Galaxy Z Flip 4',
+    description: 'A foldable smartphone with a compact design and an informative cover screen.',
+    price: 999,
+    images: ['https://ipoint.ae/cdn/shop/files/flip41.jpg?v=1742286723&width=1066'],
+    specs: {
+      storage: '256GB',
+      color: 'Bora Purple',
+      display: '6.7-inch Foldable Dynamic AMOLED 2X',
+    },
+    features: ['Flex Mode', 'Compact, Foldable Design', 'Informative Cover Screen', 'Nightography Camera'],
+    stock: 3,
   }
 ];
