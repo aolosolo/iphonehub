@@ -6,6 +6,23 @@ import { Input } from "./ui/input";
 export function Footer() {
   return (
     <footer className="bg-card text-card-foreground">
+      <div className="bg-accent text-accent-foreground">
+        <div className="container mx-auto px-6 py-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="text-center md:text-left">
+                    <h3 className="text-2xl font-bold font-headline">Subscribe & Get 10% Discount</h3>
+                    <p className="text-muted-foreground">Get E-mail updates about our latest shop and special offers.</p>
+                </div>
+                <form className="w-full max-w-md">
+                   <div className="relative">
+                     <Input type="email" placeholder="Your email address" className="h-12 bg-background"/>
+                     <Button type="submit" size="lg" className="absolute right-1 top-1/2 -translate-y-1/2 h-10">Subscribe</Button>
+                   </div>
+                </form>
+            </div>
+        </div>
+      </div>
+
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             <div>
@@ -30,17 +47,17 @@ export function Footer() {
             </div>
 
             <div>
-                <h3 className="font-semibold">Shop</h3>
+                <h3 className="font-semibold">Apple Devices</h3>
                 <nav className="mt-4 flex flex-col space-y-2 text-sm">
+                    <Link href="#" className="text-muted-foreground hover:text-foreground">Apple Studio</Link>
+                    <Link href="#" className="text-muted-foreground hover:text-foreground">Mac's</Link>
+                    <Link href="#" className="text-muted-foreground hover:text-foreground">MacBooks</Link>
                     <Link href="#" className="text-muted-foreground hover:text-foreground">Laptops</Link>
-                    <Link href="#" className="text-muted-foreground hover:text-foreground">Desktop PCs</Link>
-                    <Link href="#" className="text-muted-foreground hover:text-foreground">Phones & Mobile</Link>
-                    <Link href="#" className="text-muted-foreground hover:text-foreground">PC Parts</Link>
                 </nav>
             </div>
 
              <div>
-                <h3 className="font-semibold">My Account</h3>
+                <h3 className="font-semibold">Main Menu</h3>
                 <nav className="mt-4 flex flex-col space-y-2 text-sm">
                     <Link href="/dashboard" className="text-muted-foreground hover:text-foreground">My Account</Link>
                     <Link href="/cart" className="text-muted-foreground hover:text-foreground">Order History</Link>
@@ -50,6 +67,7 @@ export function Footer() {
 
             <div>
                  <h3 className="font-semibold">Apps & Payment</h3>
+                 <p className="text-sm text-muted-foreground mt-4">Download our Apps and get extra 15% Discount!</p>
                 <div className="mt-4 flex space-x-2">
                     <Link href="#"><Icons.appStore className="h-10"/></Link>
                     <Link href="#"><Icons.googlePlay className="h-10"/></Link>

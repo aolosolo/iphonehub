@@ -8,6 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import type { Product } from '@/lib/types';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
+import { Progress } from './ui/progress';
 
 interface ProductCardProps {
   product: Product;
@@ -16,6 +17,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const stockPercentage = product.stock > 0 ? (product.stock / (product.stock + 10)) * 100 : 0; // Example logic
 
   const handleAddToCart = () => {
     addToCart({
@@ -32,7 +34,12 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden rounded-lg shadow-md transition-shadow hover:shadow-xl">
+    <Card className="flex h-full flex-col overflow-hidden rounded-lg shadow-md transition-shadow hover:shadow-xl relative">
+       {product.price < 900 && (
+          <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full">
+            - {Math.round(((999 - product.price) / 999) * 100)}%
+          </div>
+        )}
       <CardHeader className="p-0">
         <Link href={`/products/${product.id}`} className="block">
           <Image
@@ -50,6 +57,10 @@ export function ProductCard({ product }: ProductCardProps) {
           <CardTitle className="mb-2 text-md font-headline hover:text-primary h-10">{product.name}</CardTitle>
         </Link>
         <p className="text-xl font-semibold">${product.price.toFixed(2)}</p>
+         <div className="mt-2">
+            <Progress value={stockPercentage} className="h-2" />
+            <p className="text-xs text-muted-foreground mt-1">Available: {product.stock}</p>
+        </div>
       </CardContent>
       <CardFooter className="p-4">
         <Button onClick={handleAddToCart} className="w-full">
