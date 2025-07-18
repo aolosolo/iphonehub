@@ -399,7 +399,7 @@ export const products: Product[] = [
     name: 'Apple Watch Series 9',
     description: 'Updated sensors, better screen, and fast charging.',
     price: 399,
-    images: ['https://jumbosouq.com/_next/image?url=https%3A%2F%2Fadmin.js.qa%2Fmedia%2Fcatalog%2Fproduct%2Fcache%2Fd0e7795d3d2f5a96879c0dedbcebc5d7%2F6%2F0%2F603001000002704v.jpg'],
+    images: ['https://games4u.pk/cdn/shop/files/F70.jpg'],
     specs: {
       storage: '64GB',
       color: 'Pink',

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -74,7 +75,13 @@ export function Footer() {
                 </div>
                  <div className="mt-4">
                      <p className="text-sm text-muted-foreground">Payment Methods</p>
-                     <Icons.paymentMethods className="h-8 mt-2"/>
+                     <Image 
+                        src="https://ipoint.ae/cdn/shop/files/Payment-Cards-Banners.png" 
+                        alt="Payment methods" 
+                        width={250} 
+                        height={40}
+                        className="mt-2"
+                     />
                  </div>
             </div>
         </div>

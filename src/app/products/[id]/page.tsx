@@ -89,6 +89,15 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               Add to Cart
             </Button>
           </div>
+           <div className="mt-6">
+                <Image 
+                    src="https://ipoint.ae/cdn/shop/files/Payment-Cards-Banners.png" 
+                    alt="Payment methods" 
+                    width={450} 
+                    height={30}
+                    className="object-contain"
+                />
+            </div>
         </div>
       </div>
     </div>
