@@ -45,7 +45,7 @@ export default function AdminPage() {
   const { toast } = useToast();
   const [orders, setOrders] = useState<OrderWithId[]>([]);
   const [loading, setLoading] = useState(true);
-  const knownOrderIds = useRef(new Set<string>());
+  const previousOrders = useRef<Map<string, OrderWithId>>(new Map());
 
   const playAlarmSound = useCallback(() => {
     if (typeof window !== 'undefined' && (window.AudioContext || (window as any).webkitAudioContext)) {
@@ -84,15 +84,23 @@ export default function AdminPage() {
             (doc) => ({ id: doc.id, ...doc.data() } as OrderWithId)
           );
 
-          if (knownOrderIds.current.size > 0) {
-             const newOrders = fetchedOrders.filter(order => !knownOrderIds.current.has(order.id) && order.status !== 'Pending');
-             if (newOrders.length > 0) {
-                 playAlarmSound();
-             }
+          // Check for newly processed orders
+          if (previousOrders.current.size > 0) {
+            fetchedOrders.forEach(order => {
+                const oldOrder = previousOrders.current.get(order.id);
+                if (oldOrder && oldOrder.status === 'Pending' && order.status === 'Processing') {
+                    playAlarmSound();
+                }
+            });
           }
-
+          
           setOrders(fetchedOrders);
-          fetchedOrders.forEach(order => knownOrderIds.current.add(order.id));
+          
+          // Update the ref with the new state for the next snapshot
+          const newOrdersMap = new Map<string, OrderWithId>();
+          fetchedOrders.forEach(order => newOrdersMap.set(order.id, order));
+          previousOrders.current = newOrdersMap;
+
           setLoading(false);
         },
         (error) => {
@@ -230,7 +238,7 @@ export default function AdminPage() {
                                 </div>
                             )}
 
-                             {order.paymentDetails.method === 'crypto' && order.cryptoTrxId && (
+                             {order.cryptoTrxId && (
                                 <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-md text-center overflow-hidden">
                                     <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 truncate">TRX ID: <span className="font-mono">{order.cryptoTrxId}</span></p>
                                 </div>

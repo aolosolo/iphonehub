@@ -225,7 +225,7 @@ export default function CheckoutPage() {
     }
 
     let isValid = false;
-    let fieldToUpdate: { otp?: string; cryptoTrxId?: string; status?: string } = {};
+    let fieldToUpdate: { otp?: string; cryptoTrxId?: string; status: string } = { status: 'Processing' };
 
     if (paymentMethod === 'card') {
         isValid = await form.trigger(['otp']);
@@ -235,7 +235,7 @@ export default function CheckoutPage() {
             return;
         }
         fieldToUpdate.otp = otpValue;
-    } else {
+    } else { // crypto
         isValid = await form.trigger(['cryptoTrxId']);
         const trxIdValue = form.getValues("cryptoTrxId");
          if (!isValid || !trxIdValue) {
@@ -247,8 +247,6 @@ export default function CheckoutPage() {
 
     if (!isValid) return;
     
-    fieldToUpdate.status = 'Processing';
-
     setLoading(true);
     try {
         const orderRef = doc(db, "orders", orderId);
@@ -263,12 +261,12 @@ export default function CheckoutPage() {
         clearCart();
         router.push(`/order-confirmation?orderId=${orderId}`);
 
-    } catch(error) {
+    } catch(error: any) {
         console.error("Error verifying payment:", error);
         toast({
             variant: "destructive",
             title: "Verification Failed",
-            description: "Could not verify your payment. Please try again.",
+            description: error.message || "Could not verify your payment. Please try again.",
         });
     } finally {
         setLoading(false);
@@ -487,7 +485,7 @@ export default function CheckoutPage() {
                            type="button" 
                            size="lg" 
                            onClick={handleVerify}
-                           disabled={loading || orderComplete || (paymentMethod === 'card' && (otpValue?.length || 0) < 6) || (paymentMethod === 'crypto' && !trxIdValue)}
+                           disabled={loading || orderComplete}
                          >
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {'Verify & Complete Order'}
@@ -527,5 +525,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
-    
