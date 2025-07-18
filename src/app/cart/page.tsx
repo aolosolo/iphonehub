@@ -51,7 +51,7 @@ export default function CartPage() {
                     />
                     <div className="flex-grow">
                       <h3 className="font-semibold">{item.name}</h3>
-                      <p className="text-muted-foreground">${item.price.toFixed(2)}</p>
+                      <p className="text-muted-foreground">AED {item.price.toFixed(2)}</p>
                     </div>
                     <div className="flex items-center gap-2 rounded-md border">
                       <Button
@@ -71,7 +71,7 @@ export default function CartPage() {
                       </Button>
                     </div>
                     <p className="w-20 text-right font-semibold">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      AED {(item.price * item.quantity).toFixed(2)}
                     </p>
                     <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.id)}>
                       <Trash2 className="h-4 w-4" />
@@ -89,15 +89,15 @@ export default function CartPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>AED {subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>${shipping.toFixed(2)}</span>
+                  <span>AED {shipping.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between border-t pt-4 text-lg font-bold">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>AED {total.toFixed(2)}</span>
                 </div>
               </CardContent>
               <CardFooter>

@@ -10,8 +10,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, Minus, Plus, ShoppingCart } from "lucide-react";
 
-export default function ProductPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ProductPage({ params: { id } }: { params: { id: string } }) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast();
@@ -51,7 +50,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         </div>
         <div className="flex flex-col justify-center">
           <h1 className="font-headline text-4xl font-bold">{product.name}</h1>
-          <p className="mt-2 text-3xl font-semibold text-primary">${product.price}</p>
+          <p className="mt-2 text-3xl font-semibold text-primary">AED {product.price}</p>
           <p className="mt-4 text-muted-foreground">{product.description}</p>
           
           <div className="mt-6">

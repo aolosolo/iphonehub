@@ -56,7 +56,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <Link href={`/products/${product.id}`}>
           <CardTitle className="mb-2 text-md font-headline hover:text-primary h-10">{product.name}</CardTitle>
         </Link>
-        <p className="text-xl font-semibold">${product.price.toFixed(2)}</p>
+        <p className="text-xl font-semibold">AED {product.price.toFixed(2)}</p>
          <div className="mt-2">
             <Progress value={stockPercentage} className="h-2" />
             <p className="text-xs text-muted-foreground mt-1">Available: {product.stock}</p>

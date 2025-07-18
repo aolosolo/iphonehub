@@ -389,7 +389,7 @@ export default function CheckoutPage() {
                      {(step === 3 || (step === 2 && paymentMethod === 'crypto')) && (
                         <Button type="submit" size="lg" disabled={loading || (step === 3 && timer === 0)}>
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                             {step === 3 && timer === 0 ? 'OTP Expired' : `Place Order for $${subtotal.toFixed(2)}`}
+                             {step === 3 && timer === 0 ? 'OTP Expired' : `Place Order for AED ${subtotal.toFixed(2)}`}
                         </Button>
                     )}
                 </div>
@@ -411,12 +411,12 @@ export default function CheckoutPage() {
                                     <p className="font-medium">{item.name}</p>
                                     <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
                                 </div>
-                                <p>${(item.price * item.quantity).toFixed(2)}</p>
+                                <p>AED {(item.price * item.quantity).toFixed(2)}</p>
                             </div>
                         ))}
                         <div className="border-t pt-4 flex justify-between font-bold text-lg">
                             <p>Total</p>
-                            <p>${subtotal.toFixed(2)}</p>
+                            <p>AED {subtotal.toFixed(2)}</p>
                         </div>
                     </div>
                 </CardContent>
