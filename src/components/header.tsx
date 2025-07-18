@@ -33,9 +33,9 @@ import { Input } from "./ui/input";
 
 const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/", label: "Catalog" },
+    { href: "/products", label: "Catalog" },
     { href: "/", label: "New Offer" },
-    { href: "/", label: "Collections" },
+    { href: "/collections/accessories", label: "Collections" },
 ]
 
 export function Header() {
@@ -66,13 +66,13 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="bg-card text-card-foreground border-b text-xs">
-          <div className="container mx-auto flex items-center justify-between p-2">
-              <div className="flex gap-4">
+          <div className="container mx-auto flex items-center justify-between p-2 flex-wrap">
+              <div className="flex gap-4 items-center">
                   <Link href="#" className="hover:text-primary">About Us</Link>
-                  <Link href="#" className="hover:text-primary">My Account</Link>
+                  <Link href="/dashboard" className="hover:text-primary">My Account</Link>
                   <Link href="#" className="hover:text-primary">Wishlist</Link>
               </div>
-              <div className="text-center">
+              <div className="text-center hidden md:block">
                   Free shipping all over the UAE
               </div>
               <div className="flex items-center gap-2">
@@ -82,17 +82,48 @@ export function Header() {
           </div>
       </div>
 
-      <div className="container flex h-20 items-center">
-        <div className="mr-4 flex items-center">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Icons.logo className="h-8 w-8 text-primary" />
-            <span className="hidden font-bold sm:inline-block font-headline text-2xl">
-              iPhoneHub
-            </span>
-          </Link>
+      <div className="container flex h-20 items-center justify-between">
+        {/* Mobile Menu */}
+        <div className="md:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+              <nav className="flex flex-col gap-4">
+                <Link href="/" className="mb-4 flex items-center space-x-2">
+                  <Icons.logo className="h-6 w-6" />
+                  <span className="font-bold font-headline">iPhoneHub</span>
+                </Link>
+                {navLinks.map(link => (
+                      <Link
+                          key={link.label}
+                          href={link.href}
+                          className="transition-colors hover:text-foreground/80 text-foreground"
+                          >
+                          {link.label}
+                      </Link>
+                  ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
         
-        <div className="hidden md:flex flex-1 items-center justify-center">
+        {/* Logo - Centered on mobile, left on desktop */}
+         <div className="absolute left-1/2 -translate-x-1/2 md:static md:left-auto md:translate-x-0 md:flex-none">
+            <Link href="/" className="flex items-center space-x-2">
+                <Icons.logo className="h-8 w-8 text-primary" />
+                <span className="font-bold font-headline text-2xl">
+                iPhoneHub
+                </span>
+            </Link>
+        </div>
+        
+        {/* Desktop Search */}
+        <div className="hidden md:flex flex-1 items-center justify-center px-8">
              <form onSubmit={handleSearch} className="w-full max-w-lg">
                 <div className="relative">
                     <Input 
@@ -106,35 +137,9 @@ export function Header() {
                 </div>
              </form>
         </div>
-
-
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle Menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <nav className="flex flex-col gap-4">
-              <Link href="/" className="mb-4 flex items-center space-x-2">
-                <Icons.logo className="h-6 w-6" />
-                <span className="font-bold font-headline">iPhoneHub</span>
-              </Link>
-              {navLinks.map(link => (
-                     <Link
-                        key={link.label}
-                        href={link.href}
-                        className="transition-colors hover:text-foreground/80 text-foreground"
-                        >
-                        {link.label}
-                    </Link>
-                ))}
-            </nav>
-          </SheetContent>
-        </Sheet>
         
-        <div className="flex flex-1 items-center justify-end space-x-2">
+        {/* Icons */}
+        <div className="flex items-center justify-end space-x-2">
           
           <div className="hidden md:flex items-center space-x-2">
             <Button variant="ghost" size="icon" className="relative">
@@ -145,19 +150,19 @@ export function Header() {
                 <Heart className="h-6 w-6"/>
                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">0</span>
             </Button>
-
-            <Button variant="ghost" size="icon" asChild className="relative">
-                <Link href="/cart">
-                <ShoppingCart className="h-6 w-6" />
-                {itemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                    {itemCount}
-                    </span>
-                )}
-                <span className="sr-only">Shopping Cart</span>
-                </Link>
-            </Button>
           </div>
+
+          <Button variant="ghost" size="icon" asChild className="relative">
+              <Link href="/cart">
+              <ShoppingCart className="h-6 w-6" />
+              {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                  {itemCount}
+                  </span>
+              )}
+              <span className="sr-only">Shopping Cart</span>
+              </Link>
+          </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
