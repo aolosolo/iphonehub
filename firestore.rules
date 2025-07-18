@@ -9,11 +9,41 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Allow anyone to read the public site content (like banners)
+    // --- Site Content Rules ---
+    // Allow anyone to read public content (like banners)
     match /siteContent/{contentId} {
       allow read: if true;
-      // Only the admin can write (create, update, delete) to site content
+      // Only the admin can write to site content
       allow write: if request.auth.token.email == 'admin@iphonehub.com';
+    }
+
+    // --- Orders Rules ---
+    match /orders/{orderId} {
+      // READ:
+      // - Admins can read any order.
+      // - Users can read their own orders.
+      allow read: if request.auth.token.email == 'admin@iphonehub.com'
+                  || resource.data.userId == request.auth.uid;
+
+      // CREATE:
+      // - Any authenticated user can create an order.
+      // - The userId in the order must match the user's ID.
+      // - The status must be 'Pending'.
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.status == 'Pending';
+
+      // UPDATE:
+      // - Admins can update the status of any order.
+      // - Users can update their own order only to add verification details.
+      allow update: if request.auth.token.email == 'admin@iphonehub.com'
+                    || (resource.data.userId == request.auth.uid
+                        && (request.resource.data.keys().hasOnly(['otp']) || request.resource.data.keys().hasOnly(['cryptoTrxId'])));
+
+
+      // DELETE:
+      // - Only admins can delete orders.
+      allow delete: if request.auth.token.email == 'admin@iphonehub.com';
     }
   }
 }
