@@ -1,43 +1,30 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // By default, deny all reads and writes
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // Allow anyone to read the public site content (like banners)
     match /siteContent/{contentId} {
       allow read: if true;
-      // Only the admin can write (create, update, delete) to site content
       allow write: if request.auth.token.email == 'admin@iphonehub.com';
     }
 
-    // Rules for the 'orders' collection
     match /orders/{orderId} {
-      // Who can read orders?
-      // - The user who owns the order
-      // - The admin
-      allow read: if request.auth.uid == resource.data.userId || request.auth.token.email == 'admin@iphonehub.com';
+      allow create: if true;
 
-      // Who can create orders?
-      // - Anyone can create an order (guest checkout)
-      // - If logged in, the userId must match the user's UID
-      allow create: if (request.auth == null && !('userId' in request.resource.data)) || (request.auth.uid == request.resource.data.userId);
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId || request.auth.token.email == 'admin@iphonehub.com';
 
-      // Who can update orders?
-      // - The admin can update any field
-      // - The user who owns the order can only update specific fields if the order is 'Pending' (for OTP/TrxID)
-      allow update: if request.auth.token.email == 'admin@iphonehub.com' || 
-                     (request.auth.uid == resource.data.userId &&
-                      resource.data.status == 'Pending' &&
-                      request.resource.data.keys().hasOnly(['otp', 'cryptoTrxId']));
+      // Allow a user (guest or auth) to update their own order with verification details
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['otp', 'cryptoTrxId', 'status'])
+                    && request.resource.data.status == 'Processing';
 
-      // Who can delete orders?
-      // - Only the admin
-      allow delete: if request.auth.token.email == 'admin@iphonehub.com';
+      // Allow admin to update any order
+      allow update, delete: if request.auth.token.email == 'admin@iphonehub.com';
     }
   }
 }
+
+    

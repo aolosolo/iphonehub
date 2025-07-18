@@ -1,3 +1,4 @@
+
 "use client";
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
@@ -15,8 +16,10 @@ export const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
       setCart(JSON.parse(storedCart));
@@ -24,12 +27,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (cart.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    } else {
-      localStorage.removeItem("cart");
+    if (isMounted) {
+        if (cart.length > 0) {
+          localStorage.setItem("cart", JSON.stringify(cart));
+        } else {
+          localStorage.removeItem("cart");
+        }
     }
-  }, [cart]);
+  }, [cart, isMounted]);
 
   const addToCart = (newItem: CartItem) => {
     setCart((prevCart) => {
@@ -59,7 +64,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
-    localStorage.removeItem("cart");
+    if (isMounted) {
+      localStorage.removeItem("cart");
+    }
   };
 
   return (
@@ -70,3 +77,5 @@ export function CartProvider({ children }: { children: ReactNode }) {
     </CartContext.Provider>
   );
 }
+
+    
