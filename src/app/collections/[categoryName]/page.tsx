@@ -7,7 +7,8 @@ import { products } from '@/lib/mock-data';
 import type { Product } from '@/lib/types';
 import { categories } from "@/lib/categories";
 
-export default function CategoryPage({ params: { categoryName } }: { params: { categoryName: string } }) {
+export default function CategoryPage({ params }: { params: { categoryName: string } }) {
+  const { categoryName } = params;
   const category = categories.find(c => c.slug === categoryName);
 
   if (!category) {
