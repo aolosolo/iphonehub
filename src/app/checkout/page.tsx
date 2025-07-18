@@ -157,23 +157,13 @@ export default function CheckoutPage() {
 
     const isValid = await form.trigger(fieldsToValidate);
     if (!isValid) return;
-
-    if (!user) {
-        toast({
-            variant: "destructive",
-            title: "Authentication Error",
-            description: "You must be logged in to place an order.",
-        });
-        router.push('/login');
-        return;
-    }
     
     setLoading(true);
 
     try {
         const values = form.getValues();
         
-        const paymentDetails: { method: 'card' | 'crypto', cardLast4?: string } = {
+        const paymentDetails: { method: 'card' | 'crypto'; cardLast4?: string } = {
           method: values.paymentMethod,
         };
 
@@ -181,8 +171,7 @@ export default function CheckoutPage() {
           paymentDetails.cardLast4 = values.cardNumber.slice(-4);
         }
 
-        const orderData = {
-            userId: user.uid,
+        const orderData: any = {
             items: cart,
             total: subtotal,
             status: "Pending" as const,
@@ -198,6 +187,10 @@ export default function CheckoutPage() {
             cryptoTrxId: null,
             createdAt: serverTimestamp(),
         };
+
+        if (user) {
+          orderData.userId = user.uid;
+        }
 
         const docRef = await addDoc(collection(db, "orders"), orderData);
         setOrderId(docRef.id);
