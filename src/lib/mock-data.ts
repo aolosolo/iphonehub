@@ -441,7 +441,7 @@ export const products: Product[] = [
     name: 'iPad Air 5',
     description: 'Thin and powerful mid-range tablet with M1 chip.',
     price: 599,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/ipadair5.jpg?v=1736117142'],
+    images: ['https://images.priceoye.pk/apple-ipad-air-5-pakistan-priceoye-zw5ue.jpg'],
     specs: {
       storage: '256GB',
       color: 'Blue',
@@ -563,4 +563,3 @@ export const products: Product[] = [
     stock: 220,
   }
 ];
-
