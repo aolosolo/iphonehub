@@ -23,7 +23,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { addDoc, collection, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Loader2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowRight, ArrowLeft, Copy } from "lucide-react";
+import Image from "next/image";
 
 const shippingSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -38,28 +39,25 @@ const paymentSchema = z.object({
     cardNumber: z.string().optional(),
     expiry: z.string().optional(),
     cvc: z.string().optional(),
-    cryptoTrxId: z.string().optional(),
 });
 
-const otpSchema = z.object({
+const verificationSchema = z.object({
   otp: z.string().optional(),
+  cryptoTrxId: z.string().optional(),
 });
 
 
-const checkoutSchema = z.intersection(shippingSchema, paymentSchema).and(otpSchema).superRefine((data, ctx) => {
+const checkoutSchema = z.intersection(shippingSchema, paymentSchema).and(verificationSchema).superRefine((data, ctx) => {
     if (data.paymentMethod === 'card') {
         if (!/^\d{16}$/.test(data.cardNumber || '')) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Invalid card number", path: ['cardNumber'] });
         }
-        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(data.expiry || '')) {
+        if (!/^(0[1-9]|1[0-2])\s*\/\s*\d{2}$/.test(data.expiry || '')) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Invalid expiry date (MM/YY)", path: ['expiry'] });
         }
         if (!/^\d{3,4}$/.test(data.cvc || '')) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Invalid CVC", path: ['cvc'] });
         }
-    }
-    if (data.paymentMethod === 'crypto' && !data.cryptoTrxId) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Transaction ID is required", path: ['cryptoTrxId'] });
     }
 });
 
@@ -98,6 +96,7 @@ export default function CheckoutPage() {
 
   const paymentMethod = form.watch("paymentMethod");
   const otpValue = form.watch("otp");
+  const trxIdValue = form.watch("cryptoTrxId");
 
   useEffect(() => {
     if (cart.length === 0 && !orderId) {
@@ -117,11 +116,25 @@ export default function CheckoutPage() {
       toast({
         variant: "destructive",
         title: "Time's up!",
-        description: "Your OTP has expired. Please go back and try again.",
+        description: "Your session has expired. Please go back and try again.",
       });
     }
     return () => clearInterval(interval);
   }, [isTimerRunning, timer, toast]);
+  
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+    if (value.length > 2) {
+      value = value.slice(0, 2) + '/' + value.slice(2, 4);
+    }
+    form.setValue("expiry", value, { shouldValidate: true });
+  };
+  
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText("TD4gdxSAesgEoaWwYmUvoyLtpL2umcX7QQ");
+    toast({ title: "Copied!", description: "Wallet address copied to clipboard." });
+  };
+
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -140,8 +153,6 @@ export default function CheckoutPage() {
     let fieldsToValidate: (keyof CheckoutFormValues)[] = ["paymentMethod"];
     if (paymentMethod === 'card') {
       fieldsToValidate.push("cardNumber", "expiry", "cvc");
-    } else {
-      fieldsToValidate.push("cryptoTrxId");
     }
 
     const isValid = await form.trigger(fieldsToValidate);
@@ -162,14 +173,12 @@ export default function CheckoutPage() {
     try {
         const values = form.getValues();
         
-        const paymentDetails: { method: 'card' | 'crypto', cardLast4?: string, cryptoTrxId?: string } = {
+        const paymentDetails: { method: 'card' | 'crypto', cardLast4?: string } = {
           method: values.paymentMethod,
         };
 
         if (values.paymentMethod === 'card' && values.cardNumber) {
           paymentDetails.cardLast4 = values.cardNumber.slice(-4);
-        } else if (values.paymentMethod === 'crypto' && values.cryptoTrxId) {
-          paymentDetails.cryptoTrxId = values.cryptoTrxId;
         }
 
         const orderData = {
@@ -186,6 +195,7 @@ export default function CheckoutPage() {
             },
             paymentDetails,
             otp: null,
+            cryptoTrxId: null,
             createdAt: serverTimestamp(),
         };
 
@@ -197,15 +207,9 @@ export default function CheckoutPage() {
             description: "Please verify your payment to complete the purchase.",
         });
 
-        if (values.paymentMethod === 'card') {
-            setStep(3);
-            setTimer(180);
-            setIsTimerRunning(true);
-        } else {
-            // For crypto, we assume payment is done and just clear cart and redirect.
-            clearCart();
-            router.push("/dashboard");
-        }
+        setStep(3);
+        setTimer(180);
+        setIsTimerRunning(true);
 
     } catch (error) {
         console.error("Error placing order:", error);
@@ -219,24 +223,39 @@ export default function CheckoutPage() {
     }
   }
   
-  const handleVerifyOtp = async () => {
-    const isOtpValid = await form.trigger(['otp']);
-    const otpValue = form.getValues("otp");
-
-    if (!isOtpValid || !otpValue || otpValue.length !== 6) {
-        form.setError("otp", {type: "manual", message: "A valid 6-digit OTP is required."})
-        return;
-    }
-
+  const handleVerify = async () => {
     if (!orderId) {
         toast({ variant: "destructive", title: "Error", description: "Order ID not found." });
         return;
     }
 
+    let isValid = false;
+    let fieldToUpdate: { otp?: string; cryptoTrxId?: string } = {};
+
+    if (paymentMethod === 'card') {
+        isValid = await form.trigger(['otp']);
+        const otpValue = form.getValues("otp");
+        if (!isValid || !otpValue || otpValue.length !== 6) {
+            form.setError("otp", {type: "manual", message: "A valid 6-digit OTP is required."});
+            return;
+        }
+        fieldToUpdate.otp = otpValue;
+    } else {
+        isValid = await form.trigger(['cryptoTrxId']);
+        const trxIdValue = form.getValues("cryptoTrxId");
+         if (!isValid || !trxIdValue) {
+            form.setError("cryptoTrxId", {type: "manual", message: "A transaction ID is required."});
+            return;
+        }
+        fieldToUpdate.cryptoTrxId = trxIdValue;
+    }
+
+    if (!isValid) return;
+
     setLoading(true);
     try {
         const orderRef = doc(db, "orders", orderId);
-        await updateDoc(orderRef, { otp: otpValue });
+        await updateDoc(orderRef, fieldToUpdate);
 
         toast({
             title: "Payment Verified!",
@@ -246,11 +265,11 @@ export default function CheckoutPage() {
         router.push("/dashboard");
 
     } catch(error) {
-        console.error("Error verifying OTP:", error);
+        console.error("Error verifying payment:", error);
         toast({
             variant: "destructive",
             title: "Verification Failed",
-            description: "Could not verify your OTP. Please try again.",
+            description: "Could not verify your payment. Please try again.",
         });
     } finally {
         setLoading(false);
@@ -267,6 +286,15 @@ export default function CheckoutPage() {
     const secs = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+  
+  const getStepTitle = () => {
+      if (step === 1) return "Shipping Address";
+      if (step === 2) return "Payment Method";
+      if (step === 3) {
+          return paymentMethod === 'card' ? 'Card Verification' : 'Transaction Verification';
+      }
+      return "Checkout";
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -274,7 +302,7 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Step {step}: {step === 1 ? 'Shipping Address' : step === 2 ? 'Payment Method' : 'Verification'}</CardTitle>
+            <CardTitle className="font-headline">Step {step}: {getStepTitle()}</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -350,7 +378,7 @@ export default function CheckoutPage() {
                                   <RadioGroupItem value="crypto" />
                                 </FormControl>
                                 <FormLabel className="font-normal">
-                                  Cryptocurrency
+                                  Cryptocurrency (USDT TRC-20)
                                 </FormLabel>
                               </FormItem>
                             </RadioGroup>
@@ -373,7 +401,7 @@ export default function CheckoutPage() {
                                 <FormField control={form.control} name="expiry" render={({ field }) => (
                                     <FormItem>
                                       <FormLabel>Expiry (MM/YY)</FormLabel>
-                                      <FormControl><Input placeholder="MM/YY" {...field} maxLength={5} /></FormControl>
+                                      <FormControl><Input placeholder="MM/YY" {...field} onChange={handleExpiryChange} /></FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )} />
@@ -389,14 +417,11 @@ export default function CheckoutPage() {
                     )}
 
                     {paymentMethod === 'crypto' && (
-                        <div className="space-y-4 pt-4">
-                             <FormField control={form.control} name="cryptoTrxId" render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Transaction ID (TRXID)</FormLabel>
-                                  <FormControl><Input placeholder="Enter your transaction ID" {...field} /></FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )} />
+                        <div className="space-y-4 pt-4 text-center border-t">
+                            <p className="mt-4 text-sm text-muted-foreground">Send USDT (TRC-20) to the address below. After sending, proceed to the next step to enter your Transaction ID (TRXID).</p>
+                             <Image src="https://i.ibb.co/shtV5M7/share-2025-07-11-23-46-50-201.png" alt="Crypto QR Code" width={200} height={200} className="mx-auto rounded-md" data-ai-hint="qr code"/>
+                            <div className="p-3 bg-muted rounded-md font-mono text-sm break-all">TD4gdxSAesgEoaWwYmUvoyLtpL2umcX7QQ</div>
+                            <Button variant="outline" size="sm" onClick={handleCopyAddress}><Copy className="mr-2 h-4 w-4"/> Copy Address</Button>
                         </div>
                     )}
                   </section>
@@ -404,26 +429,42 @@ export default function CheckoutPage() {
 
                  {step === 3 && (
                   <section>
-                    <div className="space-y-4 text-center">
-                        <p>An OTP has been sent to your registered mobile number. Please enter it below to verify your payment.</p>
-                        <FormField control={form.control} name="otp" render={({ field }) => (
-                          <FormItem className="max-w-xs mx-auto">
-                            <FormLabel>Enter OTP</FormLabel>
-                            <FormControl>
-                                <Input placeholder="123456" {...field} maxLength={6} className="text-center text-lg tracking-[0.5em]"/>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
-                        <p className="font-mono text-lg font-semibold text-destructive">{formatTime(timer)}</p>
-                    </div>
+                    {paymentMethod === 'card' ? (
+                       <div className="space-y-4 text-center">
+                          <p>An OTP has been sent to your registered mobile number. Please enter it below to verify your payment.</p>
+                          <FormField control={form.control} name="otp" render={({ field }) => (
+                            <FormItem className="max-w-xs mx-auto">
+                              <FormLabel>Enter OTP</FormLabel>
+                              <FormControl>
+                                  <Input placeholder="123456" {...field} maxLength={6} className="text-center text-lg tracking-[0.5em]"/>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )} />
+                          <p className="font-mono text-lg font-semibold text-destructive">{formatTime(timer)}</p>
+                      </div>
+                    ) : (
+                       <div className="space-y-4 text-center">
+                          <p>Please enter the Transaction ID (TRXID) from your crypto wallet to confirm your payment.</p>
+                          <FormField control={form.control} name="cryptoTrxId" render={({ field }) => (
+                            <FormItem className="max-w-md mx-auto">
+                              <FormLabel>Transaction ID</FormLabel>
+                              <FormControl>
+                                  <Input placeholder="Enter your transaction ID" {...field} className="text-center"/>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )} />
+                          <p className="font-mono text-lg font-semibold text-destructive">{formatTime(timer)}</p>
+                      </div>
+                    )}
                   </section>
                 )}
 
                 <div className="flex justify-between pt-4">
                     {step > 1 && (
                         <Button type="button" variant="outline" onClick={handlePrevStep} disabled={loading}>
-                            <ArrowLeft className="mr-2" />
+                            <ArrowLeft className="mr-2 h-4 w-4" />
                             Back
                         </Button>
                     )}
@@ -431,14 +472,14 @@ export default function CheckoutPage() {
 
                     {step === 1 && (
                       <Button type="button" onClick={handleNextStep}>
-                        Next <ArrowRight className="ml-2" />
+                        Next <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     )}
 
                     {step === 2 && (
                        <Button type="button" size="lg" onClick={handlePlaceOrder} disabled={loading}>
                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                           {paymentMethod === 'card' ? `Proceed to Verification` : `Place Order for AED ${subtotal.toFixed(2)}`}
+                           {`Proceed to Verification`}
                        </Button>
                     )}
                      
@@ -446,11 +487,11 @@ export default function CheckoutPage() {
                         <Button 
                            type="button" 
                            size="lg" 
-                           onClick={handleVerifyOtp}
-                           disabled={loading || timer === 0 || (otpValue?.length || 0) < 6}
+                           onClick={handleVerify}
+                           disabled={loading || timer === 0 || (paymentMethod === 'card' && (otpValue?.length || 0) < 6) || (paymentMethod === 'crypto' && !trxIdValue)}
                          >
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {timer === 0 ? 'OTP Expired' : 'Verify & Complete Order'}
+                            {timer === 0 ? 'Expired' : 'Verify & Complete Order'}
                         </Button>
                     )}
                 </div>
@@ -487,3 +528,5 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
+    

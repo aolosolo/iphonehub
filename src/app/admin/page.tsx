@@ -215,6 +215,11 @@ export default function AdminPage() {
                                 <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">OTP: <span className="font-mono tracking-widest">{order.otp}</span></p>
                             </div>
                         )}
+                        {order.cryptoTrxId && (
+                            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-md text-center overflow-hidden">
+                                <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 truncate">TRX ID: <span className="font-mono">{order.cryptoTrxId}</span></p>
+                            </div>
+                        )}
                     </CardContent>
                     <CardFooter className="flex justify-between gap-2">
                          <div className="flex gap-2">
@@ -233,3 +238,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    

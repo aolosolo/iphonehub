@@ -38,11 +38,13 @@ export type Order = {
   paymentDetails: {
       method: 'card' | 'crypto';
       cardLast4?: string;
-      cryptoTrxId?: string;
   };
   otp?: string | null;
+  cryptoTrxId?: string | null;
   createdAt: {
     seconds: number;
     nanoseconds: number;
   };
 };
+
+    
