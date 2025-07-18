@@ -43,6 +43,7 @@ export function Header() {
   const { user, isAdmin } = useAuth();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setIsMounted(true);
@@ -51,6 +52,13 @@ export function Header() {
   const handleLogout = async () => {
     await signOut(auth);
     router.push('/');
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   const itemCount = isMounted ? cart.reduce((total, item) => total + item.quantity, 0) : 0;
@@ -85,9 +93,15 @@ export function Header() {
         </div>
         
         <div className="hidden md:flex flex-1 items-center justify-center">
-             <form className="w-full max-w-lg">
+             <form onSubmit={handleSearch} className="w-full max-w-lg">
                 <div className="relative">
-                    <Input type="search" placeholder="Search for items..." className="h-10 w-full rounded-md border pl-4 pr-20"/>
+                    <Input 
+                      type="search" 
+                      placeholder="Search for items..." 
+                      className="h-10 w-full rounded-md border pl-4 pr-20"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                     <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-8">Search</Button>
                 </div>
              </form>
