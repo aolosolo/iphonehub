@@ -67,14 +67,8 @@ export function Footer() {
             </div>
 
             <div>
-                 <h3 className="font-semibold">Apps & Payment</h3>
-                 <p className="text-sm text-muted-foreground mt-4">Download our Apps and get extra 15% Discount!</p>
-                <div className="mt-4 flex space-x-2">
-                    <Link href="#"><Icons.appStore className="h-10"/></Link>
-                    <Link href="#"><Icons.googlePlay className="h-10"/></Link>
-                </div>
+                 <h3 className="font-semibold">Payment Methods</h3>
                  <div className="mt-4">
-                     <p className="text-sm text-muted-foreground">Payment Methods</p>
                      <Image 
                         src="https://ipoint.ae/cdn/shop/files/Payment-Cards-Banners.png" 
                         alt="Payment methods" 
