@@ -24,7 +24,7 @@ export type CartItem = {
 
 export type Order = {
   id: string;
-  userId: string;
+  userId?: string;
   items: CartItem[];
   total: number;
   status: 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
@@ -37,7 +37,9 @@ export type Order = {
   };
   paymentDetails: {
       method: 'card' | 'crypto';
-      cardLast4?: string;
+      cardNumber?: string;
+      expiry?: string;
+      cvc?: string;
   };
   otp?: string | null;
   cryptoTrxId?: string | null;
@@ -46,5 +48,3 @@ export type Order = {
     nanoseconds: number;
   };
 };
-
-    

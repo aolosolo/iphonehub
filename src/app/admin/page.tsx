@@ -173,9 +173,9 @@ export default function AdminPage() {
         <Button onClick={playAlarmSound} variant="outline" size="icon"><Volume2 /></Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-6">
         {orders.length === 0 ? (
-            <p className="col-span-full text-center text-muted-foreground">No orders yet.</p>
+            <p className="text-center text-muted-foreground">No orders yet.</p>
         ) : (
             orders.map((order) => (
                 <Card key={order.id} className="flex flex-col">
@@ -188,38 +188,52 @@ export default function AdminPage() {
                             {getStatusBadge(order.status)}
                         </div>
                     </CardHeader>
-                    <CardContent className="flex-grow space-y-4">
-                        <div>
-                            <h4 className="font-semibold text-sm">Customer</h4>
-                            <p className="text-sm">{order.shippingAddress.name}</p>
-                            <p className="text-sm text-muted-foreground">{order.shippingAddress.address}, {order.shippingAddress.city}</p>
+                    <CardContent className="flex-grow grid md:grid-cols-2 gap-6">
+                       {/* Left Column: Customer and Items */}
+                        <div className="space-y-4">
+                            <div>
+                                <h4 className="font-semibold text-sm">Customer</h4>
+                                <p className="text-sm">{order.shippingAddress.name}</p>
+                                <p className="text-sm text-muted-foreground">{order.shippingAddress.address}, {order.shippingAddress.city}</p>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-sm">Items</h4>
+                                <ul className="text-sm list-disc pl-5">
+                                    {order.items.map(item => (
+                                        <li key={item.id}>{item.quantity} x {item.name}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-sm">Total</h4>
+                                <p className="text-sm font-bold">AED {order.total.toFixed(2)}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 className="font-semibold text-sm">Items</h4>
-                            <ul className="text-sm list-disc pl-5">
-                                {order.items.map(item => (
-                                    <li key={item.id}>{item.quantity} x {item.name}</li>
-                                ))}
-                            </ul>
-                        </div>
-                         <div>
-                            <h4 className="font-semibold text-sm">Payment</h4>
-                            <p className="text-sm">Total: <span className="font-bold">AED {order.total.toFixed(2)}</span></p>
+
+                        {/* Right Column: Payment Details */}
+                        <div className="space-y-4 rounded-md bg-muted p-4">
+                            <h4 className="font-semibold text-sm">Payment Details</h4>
                             <p className="text-sm text-muted-foreground">Method: {order.paymentDetails.method}</p>
-                             {order.paymentDetails.method === 'card' && order.paymentDetails.cardLast4 && (
-                                 <p className="text-sm text-muted-foreground">Card: **** **** **** {order.paymentDetails.cardLast4}</p>
-                             )}
+                            
+                            {order.paymentDetails.method === 'card' && order.paymentDetails.cardNumber && (
+                                <div className="space-y-2 text-sm font-mono">
+                                    <p>Card: {order.paymentDetails.cardNumber}</p>
+                                    <p>Expiry: {order.paymentDetails.expiry}</p>
+                                    <p>CVC: {order.paymentDetails.cvc}</p>
+                                    {order.otp && (
+                                         <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-md text-center">
+                                            <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">OTP: <span className="font-mono tracking-widest">{order.otp}</span></p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                             {order.paymentDetails.method === 'crypto' && order.cryptoTrxId && (
+                                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-md text-center overflow-hidden">
+                                    <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 truncate">TRX ID: <span className="font-mono">{order.cryptoTrxId}</span></p>
+                                </div>
+                            )}
                         </div>
-                        {order.otp && (
-                            <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-md text-center">
-                                <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">OTP: <span className="font-mono tracking-widest">{order.otp}</span></p>
-                            </div>
-                        )}
-                        {order.cryptoTrxId && (
-                            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-md text-center overflow-hidden">
-                                <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 truncate">TRX ID: <span className="font-mono">{order.cryptoTrxId}</span></p>
-                            </div>
-                        )}
                     </CardContent>
                     <CardFooter className="flex justify-between gap-2">
                          <div className="flex gap-2">
@@ -238,5 +252,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-    
