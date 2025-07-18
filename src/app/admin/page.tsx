@@ -48,12 +48,13 @@ export default function AdminPage() {
   const previousOrders = useRef<Map<string, OrderWithId>>(new Map());
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // Initialize AudioContext on user interaction
+  // Initialize AudioContext on user interaction to comply with browser policies
   useEffect(() => {
     const unlockAudio = () => {
       if (window && (!audioContextRef.current || audioContextRef.current.state === 'suspended')) {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         audioContextRef.current = new AudioContext();
+        audioContextRef.current.resume();
       }
       document.removeEventListener('click', unlockAudio);
     };
@@ -65,11 +66,13 @@ export default function AdminPage() {
 
   const playAlarmSound = useCallback(() => {
     if (!audioContextRef.current || audioContextRef.current.state !== 'running') {
-      console.warn("AudioContext not running. User may need to interact with the page first.");
+      console.warn("AudioContext not running. A user interaction (click) is required to enable sound.");
+      // Attempt to resume it, just in case.
+      audioContextRef.current?.resume();
       return;
     }
     const audioContext = audioContextRef.current;
-    const notes = [440, 550, 660, 550, 440];
+    const notes = [440, 550, 660, 550, 440, 440, 550, 660, 550, 440]; // 5 sec sound
 
     notes.forEach((freq, i) => {
         const oscillator = audioContext.createOscillator();
@@ -107,7 +110,7 @@ export default function AdminPage() {
           if (previousOrders.current.size > 0) {
             fetchedOrders.forEach(order => {
                 const oldOrder = previousOrders.current.get(order.id);
-                // Play sound if it's a brand new order OR if status changed to Processing
+                // Play sound if it's a brand new order OR if status changed from Pending to Processing
                 if (!oldOrder || (oldOrder.status === 'Pending' && order.status === 'Processing')) {
                     playAlarmSound();
                 }
