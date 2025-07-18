@@ -46,26 +46,45 @@ export default function AdminPage() {
   const [orders, setOrders] = useState<OrderWithId[]>([]);
   const [loading, setLoading] = useState(true);
   const previousOrders = useRef<Map<string, OrderWithId>>(new Map());
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  // Initialize AudioContext on user interaction
+  useEffect(() => {
+    const unlockAudio = () => {
+      if (window && (!audioContextRef.current || audioContextRef.current.state === 'suspended')) {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        audioContextRef.current = new AudioContext();
+      }
+      document.removeEventListener('click', unlockAudio);
+    };
+    document.addEventListener('click', unlockAudio);
+    return () => {
+      document.removeEventListener('click', unlockAudio);
+    };
+  }, []);
 
   const playAlarmSound = useCallback(() => {
-    if (typeof window !== 'undefined' && (window.AudioContext || (window as any).webkitAudioContext)) {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const notes = [440, 550, 660, 550, 440];
-
-        notes.forEach((freq, i) => {
-            const oscillator = audioContext.createOscillator();
-            const gain = audioContext.createGain();
-
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-            oscillator.connect(gain);
-            gain.connect(audioContext.destination);
-
-            const start = audioContext.currentTime + i * 0.5;
-            oscillator.start(start);
-            oscillator.stop(start + 0.4);
-        });
+    if (!audioContextRef.current || audioContextRef.current.state !== 'running') {
+      console.warn("AudioContext not running. User may need to interact with the page first.");
+      return;
     }
+    const audioContext = audioContextRef.current;
+    const notes = [440, 550, 660, 550, 440];
+
+    notes.forEach((freq, i) => {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+
+        const start = audioContext.currentTime + i * 0.5;
+        gain.gain.setValueAtTime(0.3, start); // Set volume
+        oscillator.start(start);
+        oscillator.stop(start + 0.4);
+    });
   }, []);
 
   useEffect(() => {
@@ -84,11 +103,12 @@ export default function AdminPage() {
             (doc) => ({ id: doc.id, ...doc.data() } as OrderWithId)
           );
 
-          // Check for newly processed orders
+          // Check for newly processed orders or brand new orders
           if (previousOrders.current.size > 0) {
             fetchedOrders.forEach(order => {
                 const oldOrder = previousOrders.current.get(order.id);
-                if (oldOrder && oldOrder.status === 'Pending' && order.status === 'Processing') {
+                // Play sound if it's a brand new order OR if status changed to Processing
+                if (!oldOrder || (oldOrder.status === 'Pending' && order.status === 'Processing')) {
                     playAlarmSound();
                 }
             });
@@ -180,7 +200,7 @@ export default function AdminPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="flex justify-between items-center mb-8">
         <h1 className="font-headline text-4xl font-bold">Admin Dashboard</h1>
-        <Button onClick={playAlarmSound} variant="outline" size="icon"><Volume2 /></Button>
+        <Button onClick={playAlarmSound} variant="outline" size="icon" title="Test Alarm Sound"><Volume2 /></Button>
       </div>
 
       <div className="space-y-6">
