@@ -161,6 +161,17 @@ export default function CheckoutPage() {
 
     try {
         const values = form.getValues();
+        
+        const paymentDetails: { method: 'card' | 'crypto', cardLast4?: string, cryptoTrxId?: string } = {
+          method: values.paymentMethod,
+        };
+
+        if (values.paymentMethod === 'card' && values.cardNumber) {
+          paymentDetails.cardLast4 = values.cardNumber.slice(-4);
+        } else if (values.paymentMethod === 'crypto' && values.cryptoTrxId) {
+          paymentDetails.cryptoTrxId = values.cryptoTrxId;
+        }
+
         const orderData = {
             userId: user.uid,
             items: cart,
@@ -173,11 +184,7 @@ export default function CheckoutPage() {
                 zip: values.zip,
                 country: values.country,
             },
-            paymentDetails: {
-                method: values.paymentMethod,
-                cardLast4: values.paymentMethod === 'card' ? values.cardNumber?.slice(-4) : undefined,
-                cryptoTrxId: values.paymentMethod === 'crypto' ? values.cryptoTrxId : undefined,
-            },
+            paymentDetails,
             otp: null,
             createdAt: serverTimestamp(),
         };
