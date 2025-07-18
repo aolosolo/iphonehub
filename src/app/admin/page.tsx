@@ -227,7 +227,8 @@ export default function AdminPage() {
                             <div>
                                 <h4 className="font-semibold text-sm">Customer</h4>
                                 <p className="text-sm">{order.shippingAddress.name}</p>
-                                <p className="text-sm text-muted-foreground">{order.shippingAddress.address}, {order.shippingAddress.city}</p>
+                                <p className="text-sm text-muted-foreground">{order.shippingAddress.address}</p>
+                                <p className="text-sm text-muted-foreground">{order.shippingAddress.city}, {order.shippingAddress.zip}, {order.shippingAddress.country}</p>
                             </div>
                             <div>
                                 <h4 className="font-semibold text-sm">Items</h4>
