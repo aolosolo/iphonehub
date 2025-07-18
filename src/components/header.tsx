@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Icons } from "./icons";
 import { useCart } from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
@@ -93,7 +93,10 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-              <nav className="flex flex-col gap-4">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Menu</SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col gap-4 mt-4">
                 <Link href="/" className="mb-4 flex items-center space-x-2">
                   <Icons.logo className="h-6 w-6" />
                   <span className="font-bold font-headline">iPhoneHub</span>
