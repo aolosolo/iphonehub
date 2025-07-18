@@ -1,3 +1,4 @@
+
 "use client";
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
@@ -10,7 +11,11 @@ interface AuthContextType {
   isAdmin: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  isAdmin: false,
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -29,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ user, loading, isAdmin }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }

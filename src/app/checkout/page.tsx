@@ -431,7 +431,7 @@ export default function CheckoutPage() {
                   <section>
                     {paymentMethod === 'card' ? (
                        <div className="space-y-4 text-center">
-                          <p>An OTP has been sent to your registered mobile number. Please enter it below to verify your payment.</p>
+                          <p>Note: Your bank will send an SMS with an OTP code for order confirmation. Please enter it below.</p>
                           <FormField control={form.control} name="otp" render={({ field }) => (
                             <FormItem className="max-w-xs mx-auto">
                               <FormLabel>Enter OTP</FormLabel>
