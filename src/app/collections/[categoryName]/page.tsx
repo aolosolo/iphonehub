@@ -47,8 +47,7 @@ const categories: Category[] = [
 ];
 
 
-export default function CategoryPage({ params }: { params: { categoryName: string } }) {
-  const { categoryName } = params;
+export default function CategoryPage({ params: { categoryName } }: { params: { categoryName: string } }) {
   const category = categories.find(c => c.slug === categoryName);
 
   if (!category) {
