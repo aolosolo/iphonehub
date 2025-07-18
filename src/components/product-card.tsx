@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -9,6 +10,7 @@ import type { Product } from '@/lib/types';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from './ui/progress';
+import { useRouter } from 'next/navigation';
 
 interface ProductCardProps {
   product: Product;
@@ -17,6 +19,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const router = useRouter();
   const stockPercentage = product.stock > 0 ? (product.stock / (product.stock + 10)) * 100 : 0; // Example logic
 
   const handleAddToCart = () => {
@@ -27,10 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
       quantity: 1,
       image: product.images[0],
     });
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    });
+    router.push('/cart');
   };
 
   return (

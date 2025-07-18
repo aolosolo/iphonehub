@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { products } from "@/lib/mock-data";
 import { useCart } from "@/hooks/use-cart";
@@ -15,6 +15,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const router = useRouter();
 
   const product = products.find((p) => p.id === id);
 
@@ -30,10 +31,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       quantity,
       image: product.images[0],
     });
-    toast({
-      title: "Added to cart",
-      description: `${quantity} x ${product.name} added to your cart.`,
-    });
+    router.push('/cart');
   };
 
   return (
