@@ -21,7 +21,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, ArrowRight, ArrowLeft } from "lucide-react";
 
@@ -73,6 +73,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   const [timer, setTimer] = useState(180); // 3 minutes in seconds
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -99,10 +100,10 @@ export default function CheckoutPage() {
   const otpValue = form.watch("otp");
 
   useEffect(() => {
-    if (cart.length === 0) {
+    if (cart.length === 0 && !orderId) {
       router.push('/');
     }
-  }, [cart, router]);
+  }, [cart, router, orderId]);
 
 
   useEffect(() => {
@@ -124,43 +125,27 @@ export default function CheckoutPage() {
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  const processNextStep = async () => {
-    let fieldsToValidate: (keyof CheckoutFormValues)[] = [];
-    if (step === 1) {
-      fieldsToValidate = ["name", "address", "city", "zip", "country"];
-    } else if (step === 2) {
-      fieldsToValidate.push("paymentMethod");
-      if (paymentMethod === 'card') {
-        fieldsToValidate.push("cardNumber", "expiry", "cvc");
-      } else {
-        fieldsToValidate.push("cryptoTrxId");
-      }
-    }
-    
-    const isValid = await form.trigger(fieldsToValidate);
-    if (!isValid) return;
-
-    if (step === 2 && paymentMethod === 'card') {
-        setStep(3);
-        setTimer(180);
-        setIsTimerRunning(true);
-    } else {
-        await form.handleSubmit(onSubmit)();
+  const handleNextStep = async () => {
+    const isValid = await form.trigger(["name", "address", "city", "zip", "country"]);
+    if (isValid) {
+      setStep(2);
     }
   };
 
-  const processPrevStep = () => {
+  const handlePrevStep = () => {
     setStep(s => s - 1);
   };
-
-  async function onSubmit(values: CheckoutFormValues) {
-    if (step === 3) {
-      const isOtpValid = await form.trigger(['otp']);
-      if (!isOtpValid || !values.otp || values.otp.length !== 6) {
-        form.setError("otp", {type: "manual", message: "A valid 6-digit OTP is required."})
-        return;
-      }
+  
+  const handlePlaceOrder = async () => {
+    let fieldsToValidate: (keyof CheckoutFormValues)[] = ["paymentMethod"];
+    if (paymentMethod === 'card') {
+      fieldsToValidate.push("cardNumber", "expiry", "cvc");
+    } else {
+      fieldsToValidate.push("cryptoTrxId");
     }
+
+    const isValid = await form.trigger(fieldsToValidate);
+    if (!isValid) return;
 
     if (!user) {
         toast({
@@ -171,10 +156,11 @@ export default function CheckoutPage() {
         router.push('/login');
         return;
     }
-
+    
     setLoading(true);
 
     try {
+        const values = form.getValues();
         const orderData = {
             userId: user.uid,
             items: cart,
@@ -192,18 +178,27 @@ export default function CheckoutPage() {
                 cardLast4: values.paymentMethod === 'card' ? values.cardNumber?.slice(-4) : undefined,
                 cryptoTrxId: values.paymentMethod === 'crypto' ? values.cryptoTrxId : undefined,
             },
-            otp: values.otp || null,
+            otp: null,
             createdAt: serverTimestamp(),
         };
 
-        await addDoc(collection(db, "orders"), orderData);
+        const docRef = await addDoc(collection(db, "orders"), orderData);
+        setOrderId(docRef.id);
         
         toast({
             title: "Order Placed!",
-            description: "Thank you for your purchase.",
+            description: "Please verify your payment to complete the purchase.",
         });
-        clearCart();
-        router.push("/dashboard");
+
+        if (values.paymentMethod === 'card') {
+            setStep(3);
+            setTimer(180);
+            setIsTimerRunning(true);
+        } else {
+            // For crypto, we assume payment is done and just clear cart and redirect.
+            clearCart();
+            router.push("/dashboard");
+        }
 
     } catch (error) {
         console.error("Error placing order:", error);
@@ -216,8 +211,47 @@ export default function CheckoutPage() {
         setLoading(false);
     }
   }
+  
+  const handleVerifyOtp = async () => {
+    const isOtpValid = await form.trigger(['otp']);
+    const otpValue = form.getValues("otp");
 
-  if (cart.length === 0) {
+    if (!isOtpValid || !otpValue || otpValue.length !== 6) {
+        form.setError("otp", {type: "manual", message: "A valid 6-digit OTP is required."})
+        return;
+    }
+
+    if (!orderId) {
+        toast({ variant: "destructive", title: "Error", description: "Order ID not found." });
+        return;
+    }
+
+    setLoading(true);
+    try {
+        const orderRef = doc(db, "orders", orderId);
+        await updateDoc(orderRef, { otp: otpValue });
+
+        toast({
+            title: "Payment Verified!",
+            description: "Thank you for your purchase.",
+        });
+        clearCart();
+        router.push("/dashboard");
+
+    } catch(error) {
+        console.error("Error verifying OTP:", error);
+        toast({
+            variant: "destructive",
+            title: "Verification Failed",
+            description: "Could not verify your OTP. Please try again.",
+        });
+    } finally {
+        setLoading(false);
+    }
+  }
+
+
+  if (cart.length === 0 && !orderId) {
     return null;
   }
 
@@ -237,7 +271,7 @@ export default function CheckoutPage() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
                 {step === 1 && (
                   <section>
                     <div className="space-y-4">
@@ -381,29 +415,35 @@ export default function CheckoutPage() {
 
                 <div className="flex justify-between pt-4">
                     {step > 1 && (
-                        <Button type="button" variant="outline" onClick={processPrevStep} disabled={loading}>
+                        <Button type="button" variant="outline" onClick={handlePrevStep} disabled={loading}>
                             <ArrowLeft className="mr-2" />
                             Back
                         </Button>
                     )}
                     <div className="flex-grow" />
-                    {step < 3 && paymentMethod === 'card' && (
-                        <Button type="button" onClick={processNextStep} disabled={loading}>
-                           {loading ? <Loader2 className="animate-spin"/> : 'Next'}
-                           <ArrowRight className="ml-2" />
-                        </Button>
+
+                    {step === 1 && (
+                      <Button type="button" onClick={handleNextStep}>
+                        Next <ArrowRight className="ml-2" />
+                      </Button>
                     )}
-                     {(step === 3 || (step === 2 && paymentMethod === 'crypto') || step === 1) && (
-                         <Button 
-                           type={step === 1 ? 'button' : 'submit'} 
-                           onClick={step === 1 ? processNextStep : undefined}
+
+                    {step === 2 && (
+                       <Button type="button" size="lg" onClick={handlePlaceOrder} disabled={loading}>
+                           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                           {paymentMethod === 'card' ? `Proceed to Verification` : `Place Order for AED ${subtotal.toFixed(2)}`}
+                       </Button>
+                    )}
+                     
+                    {step === 3 && (
+                        <Button 
+                           type="button" 
                            size="lg" 
-                           disabled={loading || (step === 3 && timer === 0) || (step === 3 && (otpValue?.length || 0) < 6)}
+                           onClick={handleVerifyOtp}
+                           disabled={loading || timer === 0 || (otpValue?.length || 0) < 6}
                          >
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {step === 1 && 'Next'}
-                            {step === 2 && `Place Order for AED ${subtotal.toFixed(2)}`}
-                            {step === 3 && (timer === 0 ? 'OTP Expired' : `Place Order for AED ${subtotal.toFixed(2)}`)}
+                            {timer === 0 ? 'OTP Expired' : 'Verify & Complete Order'}
                         </Button>
                     )}
                 </div>
