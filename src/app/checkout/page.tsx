@@ -21,7 +21,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { addDoc, collection, serverTimestamp, doc, updateDoc, getDoc } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, doc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, ArrowRight, ArrowLeft, Copy } from "lucide-react";
 import Image from "next/image";
@@ -114,16 +114,9 @@ export default function CheckoutPage() {
       }, 1000);
     } else if (timer === 0) {
       setIsTimerRunning(false);
-       if (!orderComplete) {
-        toast({
-            variant: "destructive",
-            title: "Time's up!",
-            description: "Your session has expired. Please go back and try again.",
-        });
-       }
     }
     return () => clearInterval(interval);
-  }, [isTimerRunning, timer, toast, orderComplete]);
+  }, [isTimerRunning, timer]);
   
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
@@ -176,6 +169,9 @@ export default function CheckoutPage() {
           paymentDetails.cvc = values.cvc;
         }
 
+        const deliveryDate = new Date();
+        deliveryDate.setDate(deliveryDate.getDate() + 5);
+
         const orderData: any = {
             items: cart,
             total: subtotal,
@@ -191,6 +187,7 @@ export default function CheckoutPage() {
             otp: null,
             cryptoTrxId: null,
             createdAt: serverTimestamp(),
+            estimatedDelivery: Timestamp.fromDate(deliveryDate),
         };
 
         if (user) {
@@ -228,7 +225,7 @@ export default function CheckoutPage() {
     }
 
     let isValid = false;
-    let fieldToUpdate: { otp?: string; cryptoTrxId?: string } = {};
+    let fieldToUpdate: { otp?: string; cryptoTrxId?: string; status?: string } = {};
 
     if (paymentMethod === 'card') {
         isValid = await form.trigger(['otp']);
@@ -249,6 +246,8 @@ export default function CheckoutPage() {
     }
 
     if (!isValid) return;
+    
+    fieldToUpdate.status = 'Processing';
 
     setLoading(true);
     try {
@@ -262,7 +261,7 @@ export default function CheckoutPage() {
             description: "Thank you for your purchase.",
         });
         clearCart();
-        router.push("/dashboard");
+        router.push(`/order-confirmation?orderId=${orderId}`);
 
     } catch(error) {
         console.error("Error verifying payment:", error);
@@ -441,7 +440,7 @@ export default function CheckoutPage() {
                               <FormMessage />
                             </FormItem>
                           )} />
-                          <p className="font-mono text-lg font-semibold text-destructive">{formatTime(timer)}</p>
+                          {timer > 0 && <p className="font-mono text-lg font-semibold text-destructive">{formatTime(timer)}</p>}
                       </div>
                     ) : (
                        <div className="space-y-4 text-center">
@@ -455,7 +454,7 @@ export default function CheckoutPage() {
                               <FormMessage />
                             </FormItem>
                           )} />
-                          <p className="font-mono text-lg font-semibold text-destructive">{formatTime(timer)}</p>
+                          {timer > 0 && <p className="font-mono text-lg font-semibold text-destructive">{formatTime(timer)}</p>}
                       </div>
                     )}
                   </section>
@@ -488,10 +487,10 @@ export default function CheckoutPage() {
                            type="button" 
                            size="lg" 
                            onClick={handleVerify}
-                           disabled={loading || timer === 0 || orderComplete || (paymentMethod === 'card' && (otpValue?.length || 0) < 6) || (paymentMethod === 'crypto' && !trxIdValue)}
+                           disabled={loading || orderComplete || (paymentMethod === 'card' && (otpValue?.length || 0) < 6) || (paymentMethod === 'crypto' && !trxIdValue)}
                          >
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {timer === 0 ? 'Expired' : 'Verify & Complete Order'}
+                            {'Verify & Complete Order'}
                         </Button>
                     )}
                 </div>

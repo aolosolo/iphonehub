@@ -32,7 +32,8 @@ import {
   XCircle,
   Truck,
   Loader2,
-  Volume2
+  Volume2,
+  RefreshCw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -84,7 +85,7 @@ export default function AdminPage() {
           );
 
           if (knownOrderIds.current.size > 0) {
-             const newOrders = fetchedOrders.filter(order => !knownOrderIds.current.has(order.id));
+             const newOrders = fetchedOrders.filter(order => !knownOrderIds.current.has(order.id) && order.status !== 'Pending');
              if (newOrders.length > 0) {
                  playAlarmSound();
              }
@@ -146,7 +147,8 @@ export default function AdminPage() {
   
   const getStatusBadge = (status: Order["status"]) => {
     switch (status) {
-        case "Pending": return <Badge variant="secondary"><Clock className="mr-1 h-3 w-3"/>Pending</Badge>;
+        case "Pending": return <Badge variant="secondary"><Clock className="mr-1 h-3 w-3"/>Pending Verification</Badge>;
+        case "Processing": return <Badge variant="default" className="bg-blue-600"><RefreshCw className="mr-1 h-3 w-3"/>Processing</Badge>;
         case "Shipped": return <Badge><Truck className="mr-1 h-3 w-3"/>Shipped</Badge>;
         case "Delivered": return <Badge className="bg-green-600"><CheckCircle className="mr-1 h-3 w-3"/>Delivered</Badge>;
         case "Cancelled": return <Badge variant="destructive"><XCircle className="mr-1 h-3 w-3"/>Cancelled</Badge>;
@@ -237,7 +239,7 @@ export default function AdminPage() {
                     </CardContent>
                     <CardFooter className="flex justify-between gap-2">
                          <div className="flex gap-2">
-                             <Button size="sm" onClick={() => updateOrderStatus(order.id, 'Shipped')} disabled={order.status === 'Shipped' || order.status === 'Delivered'}>
+                             <Button size="sm" onClick={() => updateOrderStatus(order.id, 'Shipped')} disabled={order.status === 'Shipped' || order.status === 'Delivered' || order.status === 'Pending'}>
                                 <Truck className="mr-2 h-4 w-4"/> Ship
                             </Button>
                          </div>

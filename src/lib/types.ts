@@ -1,4 +1,6 @@
 
+import type { Timestamp } from 'firebase/firestore';
+
 export type Product = {
   id: string;
   name: string;
@@ -27,7 +29,7 @@ export type Order = {
   userId?: string;
   items: CartItem[];
   total: number;
-  status: 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   shippingAddress: {
     name: string;
     address: string;
@@ -47,4 +49,5 @@ export type Order = {
     seconds: number;
     nanoseconds: number;
   };
+  estimatedDelivery?: Timestamp;
 };
