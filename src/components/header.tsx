@@ -30,12 +30,12 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Input } from "./ui/input";
+import { categories } from "@/lib/categories";
 
 const navLinks = [
     { href: "/", label: "Home" },
     { href: "/products", label: "Catalog" },
-    { href: "/", label: "New Offer" },
-    { href: "/collections/accessories", label: "Collections" },
+    ...categories.map(c => ({ href: `/collections/${c.slug}`, label: c.title })),
 ]
 
 export function Header() {

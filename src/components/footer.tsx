@@ -1,8 +1,10 @@
+
 import Link from "next/link";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import Image from "next/image";
+import { categories } from "@/lib/categories";
 
 export function Footer() {
   return (
@@ -48,12 +50,12 @@ export function Footer() {
             </div>
 
             <div>
-                <h3 className="font-semibold">Apple Devices</h3>
+                <h3 className="font-semibold">Shop by Category</h3>
                 <nav className="mt-4 flex flex-col space-y-2 text-sm">
-                    <Link href="#" className="text-muted-foreground hover:text-foreground">Apple Studio</Link>
-                    <Link href="#" className="text-muted-foreground hover:text-foreground">Mac's</Link>
-                    <Link href="#" className="text-muted-foreground hover:text-foreground">MacBooks</Link>
-                    <Link href="#" className="text-muted-foreground hover:text-foreground">Laptops</Link>
+                    {categories.map((category) => (
+                      <Link key={category.slug} href={`/collections/${category.slug}`} className="text-muted-foreground hover:text-foreground">{category.title}</Link>
+                    ))}
+                    <Link href="/products" className="text-muted-foreground hover:text-foreground">All Products</Link>
                 </nav>
             </div>
 
@@ -61,8 +63,8 @@ export function Footer() {
                 <h3 className="font-semibold">Main Menu</h3>
                 <nav className="mt-4 flex flex-col space-y-2 text-sm">
                     <Link href="/dashboard" className="text-muted-foreground hover:text-foreground">My Account</Link>
-                    <Link href="/cart" className="text-muted-foreground hover:text-foreground">Order History</Link>
                     <Link href="/cart" className="text-muted-foreground hover:text-foreground">Shopping Cart</Link>
+                    <Link href="/checkout" className="text-muted-foreground hover:text-foreground">Checkout</Link>
                 </nav>
             </div>
 
