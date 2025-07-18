@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import {
@@ -44,8 +44,28 @@ export default function AdminPage() {
   const { toast } = useToast();
   const [orders, setOrders] = useState<OrderWithId[]>([]);
   const [loading, setLoading] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const knownOrderIds = useRef(new Set<string>());
+
+  const playAlarmSound = useCallback(() => {
+    if (typeof window !== 'undefined' && (window.AudioContext || (window as any).webkitAudioContext)) {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const notes = [440, 550, 660, 550, 440];
+
+        notes.forEach((freq, i) => {
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+            oscillator.connect(gain);
+            gain.connect(audioContext.destination);
+
+            const start = audioContext.currentTime + i * 0.5;
+            oscillator.start(start);
+            oscillator.stop(start + 0.4);
+        });
+    }
+  }, []);
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -66,7 +86,7 @@ export default function AdminPage() {
           if (knownOrderIds.current.size > 0) {
              const newOrders = fetchedOrders.filter(order => !knownOrderIds.current.has(order.id));
              if (newOrders.length > 0) {
-                 playSound();
+                 playAlarmSound();
              }
           }
 
@@ -86,13 +106,7 @@ export default function AdminPage() {
       );
       return () => unsubscribe();
     }
-  }, [isAdmin, toast]);
-
-  const playSound = () => {
-    if (audioRef.current) {
-        audioRef.current.play().catch(e => console.error("Audio play failed", e));
-    }
-  };
+  }, [isAdmin, toast, playAlarmSound]);
 
   const updateOrderStatus = async (id: string, status: Order["status"]) => {
     const orderRef = doc(db, "orders", id);
@@ -156,7 +170,7 @@ export default function AdminPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="flex justify-between items-center mb-8">
         <h1 className="font-headline text-4xl font-bold">Admin Dashboard</h1>
-        <Button onClick={playSound} variant="outline" size="icon"><Volume2 /></Button>
+        <Button onClick={playAlarmSound} variant="outline" size="icon"><Volume2 /></Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -216,7 +230,6 @@ export default function AdminPage() {
             ))
         )}
       </div>
-      <audio ref={audioRef} src="/notification.mp3" preload="auto"></audio>
     </div>
   );
 }
