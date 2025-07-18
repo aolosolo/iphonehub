@@ -39,10 +39,14 @@ const paymentSchema = z.object({
     expiry: z.string().optional(),
     cvc: z.string().optional(),
     cryptoTrxId: z.string().optional(),
-    otp: z.string().optional(),
 });
 
-const checkoutSchema = z.intersection(shippingSchema, paymentSchema).superRefine((data, ctx) => {
+const otpSchema = z.object({
+  otp: z.string().optional(),
+});
+
+
+const checkoutSchema = z.intersection(shippingSchema, paymentSchema).and(otpSchema).superRefine((data, ctx) => {
     if (data.paymentMethod === 'card') {
         if (!/^\d{16}$/.test(data.cardNumber || '')) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Invalid card number", path: ['cardNumber'] });
@@ -56,9 +60,6 @@ const checkoutSchema = z.intersection(shippingSchema, paymentSchema).superRefine
     }
     if (data.paymentMethod === 'crypto' && !data.cryptoTrxId) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Transaction ID is required", path: ['cryptoTrxId'] });
-    }
-    if (data.otp && !/^\d{6}$/.test(data.otp)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "OTP must be 6 digits", path: ['otp'] });
     }
 });
 
@@ -91,9 +92,11 @@ export default function CheckoutPage() {
       cryptoTrxId: "",
       otp: "",
     },
+    mode: "onChange",
   });
 
   const paymentMethod = form.watch("paymentMethod");
+  const otpValue = form.watch("otp");
 
   useEffect(() => {
     if (cart.length === 0) {
@@ -142,7 +145,7 @@ export default function CheckoutPage() {
         setTimer(180);
         setIsTimerRunning(true);
     } else {
-        form.handleSubmit(onSubmit)();
+        await form.handleSubmit(onSubmit)();
     }
   };
 
@@ -151,10 +154,13 @@ export default function CheckoutPage() {
   };
 
   async function onSubmit(values: CheckoutFormValues) {
-     if (step === 3) {
-        const isOtpValid = await form.trigger(['otp']);
-        if (!isOtpValid) return;
-     }
+    if (step === 3) {
+      const isOtpValid = await form.trigger(['otp']);
+      if (!isOtpValid || !values.otp || values.otp.length !== 6) {
+        form.setError("otp", {type: "manual", message: "A valid 6-digit OTP is required."})
+        return;
+      }
+    }
 
     if (!user) {
         toast({
@@ -173,7 +179,7 @@ export default function CheckoutPage() {
             userId: user.uid,
             items: cart,
             total: subtotal,
-            status: "Pending",
+            status: "Pending" as const,
             shippingAddress: {
                 name: values.name,
                 address: values.address,
@@ -186,6 +192,7 @@ export default function CheckoutPage() {
                 cardLast4: values.paymentMethod === 'card' ? values.cardNumber?.slice(-4) : undefined,
                 cryptoTrxId: values.paymentMethod === 'crypto' ? values.cryptoTrxId : undefined,
             },
+            otp: values.otp || null,
             createdAt: serverTimestamp(),
         };
 
@@ -317,7 +324,7 @@ export default function CheckoutPage() {
                             <FormField control={form.control} name="cardNumber" render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Card Number</FormLabel>
-                                  <FormControl><Input placeholder="**** **** **** ****" {...field} /></FormControl>
+                                  <FormControl><Input placeholder="**** **** **** ****" {...field} maxLength={16} /></FormControl>
                                   <FormMessage />
                                 </FormItem>
                               )} />
@@ -325,14 +332,14 @@ export default function CheckoutPage() {
                                 <FormField control={form.control} name="expiry" render={({ field }) => (
                                     <FormItem>
                                       <FormLabel>Expiry (MM/YY)</FormLabel>
-                                      <FormControl><Input placeholder="MM/YY" {...field} /></FormControl>
+                                      <FormControl><Input placeholder="MM/YY" {...field} maxLength={5} /></FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )} />
                                 <FormField control={form.control} name="cvc" render={({ field }) => (
                                     <FormItem>
                                       <FormLabel>CVC</FormLabel>
-                                      <FormControl><Input placeholder="123" {...field} /></FormControl>
+                                      <FormControl><Input placeholder="123" {...field} maxLength={4} /></FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )} />
@@ -362,7 +369,7 @@ export default function CheckoutPage() {
                           <FormItem className="max-w-xs mx-auto">
                             <FormLabel>Enter OTP</FormLabel>
                             <FormControl>
-                                <Input placeholder="123456" {...field} maxLength={6} />
+                                <Input placeholder="123456" {...field} maxLength={6} className="text-center text-lg tracking-[0.5em]"/>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -380,16 +387,23 @@ export default function CheckoutPage() {
                         </Button>
                     )}
                     <div className="flex-grow" />
-                    {step < 3 && (
+                    {step < 3 && paymentMethod === 'card' && (
                         <Button type="button" onClick={processNextStep} disabled={loading}>
                            {loading ? <Loader2 className="animate-spin"/> : 'Next'}
                            <ArrowRight className="ml-2" />
                         </Button>
                     )}
-                     {(step === 3 || (step === 2 && paymentMethod === 'crypto')) && (
-                        <Button type="submit" size="lg" disabled={loading || (step === 3 && timer === 0)}>
+                     {(step === 3 || (step === 2 && paymentMethod === 'crypto') || step === 1) && (
+                         <Button 
+                           type={step === 1 ? 'button' : 'submit'} 
+                           onClick={step === 1 ? processNextStep : undefined}
+                           size="lg" 
+                           disabled={loading || (step === 3 && timer === 0) || (step === 3 && (otpValue?.length || 0) < 6)}
+                         >
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                             {step === 3 && timer === 0 ? 'OTP Expired' : `Place Order for AED ${subtotal.toFixed(2)}`}
+                            {step === 1 && 'Next'}
+                            {step === 2 && `Place Order for AED ${subtotal.toFixed(2)}`}
+                            {step === 3 && (timer === 0 ? 'OTP Expired' : `Place Order for AED ${subtotal.toFixed(2)}`)}
                         </Button>
                     )}
                 </div>

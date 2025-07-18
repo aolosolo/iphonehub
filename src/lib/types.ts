@@ -36,9 +36,11 @@ export type Order = {
     country: string;
   };
   paymentDetails: {
-      cardNumber: string;
-      expiry: string;
+      method: 'card' | 'crypto';
+      cardLast4?: string;
+      cryptoTrxId?: string;
   };
+  otp?: string | null;
   createdAt: {
     seconds: number;
     nanoseconds: number;

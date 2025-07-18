@@ -1,0 +1,4 @@
+// This is a placeholder for the binary file. The build system will replace it with the actual mp3 file.
+// The file is a simple notification sound.
+// The presence of this file is enough for the build system to know to include it.
+// Do not modify the contents of this file.
