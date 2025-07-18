@@ -147,7 +147,7 @@ export const products: Product[] = [
     name: 'MacBook Pro M3',
     description: 'M3-powered MacBook for advanced performance and long battery life.',
     price: 1999,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/macbookproM3.jpg?v=1739206884'],
+    images: ['https://static.independent.co.uk/2023/11/06/13/Macbook-1.png'],
     specs: {
       storage: '512GB SSD',
       color: 'Silver',
@@ -161,7 +161,7 @@ export const products: Product[] = [
     name: 'iPad Pro 12.9"',
     description: 'Large display iPad with Apple Pencil support for creatives and professionals.',
     price: 1099,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/ipadpro12.jpg?v=1736116892'],
+    images: ['https://www.classic-phones.com/cdn/shop/products/03-anker-branding-1024x576_9ce10f2e-f05d-403a-bd69-b89bc172bf14.jpg?v=1673527469'],
     specs: {
       storage: '256GB',
       color: 'Space Gray',
@@ -175,7 +175,7 @@ export const products: Product[] = [
     name: 'Apple Pencil 3rd Gen',
     description: 'Precision stylus for iPad, great for drawing, notes, and editing.',
     price: 129,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/pencil3.jpg?v=1736116900'],
+    images: ['https://image.made-in-china.com/202f0j00qabepVjIhDkl/Factory-Price-for-Stylus-Pens-for-Apple-for-iPad-Pen-Touch-Screen-Pen-for-Apple-Pencil-2ND-Generation-for-Magnetic-Pencil.webp'],
     specs: {
       storage: 'N/A',
       color: 'White',
@@ -189,7 +189,7 @@ export const products: Product[] = [
     name: 'Samsung Galaxy S25 Ultra',
     description: 'Flagship Samsung phone with top-tier specs and camera.',
     price: 1199,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/galaxys25ultra.jpg?v=1736116930'],
+    images: ['https://images.olx.com.pk/thumbnails/554061345-240x180.jpeg'],
     specs: {
       storage: '512GB',
       color: 'Phantom Black',
@@ -203,7 +203,7 @@ export const products: Product[] = [
     name: 'iPhone 13 Mini',
     description: 'Compact iPhone with powerful internals and vibrant display.',
     price: 699,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/iphone13mini.jpg?v=1736116942'],
+    images: ['https://cdn.homeshopping.pk/product_images/i/121/61KeIxmldLL._SL1500___86370_zoom.jpg'],
     specs: {
       storage: '128GB',
       color: 'Starlight',
@@ -217,7 +217,7 @@ export const products: Product[] = [
     name: 'Apple TV 4K',
     description: 'Smart streaming box with 4K HDR support and Siri Remote.',
     price: 179,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/appletv4k.jpg?v=1736116955'],
+    images: ['https://myshop.pk/pub/media/catalog/product/cache/26f8091d81cea4b38d820a1d1a4f62be/a/p/apple_tv_4k_2nd_gen_-_32gb_myshop-pk-2.jpg'],
     specs: {
       storage: '64GB',
       color: 'Black',
@@ -231,7 +231,7 @@ export const products: Product[] = [
     name: 'AirTag (4 Pack)',
     description: 'Bluetooth tracker to locate keys, bags, or personal items.',
     price: 99,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/airtag.jpg?v=1736116971'],
+    images: ['https://5.imimg.com/data5/SELLER/Default/2023/3/SU/YD/OI/184984620/img-7613-500x500.jpg'],
     specs: {
       storage: 'N/A',
       color: 'White',
@@ -245,7 +245,7 @@ export const products: Product[] = [
     name: 'Apple Magic Mouse',
     description: 'Wireless rechargeable mouse with sleek multi-touch surface.',
     price: 79,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/magicmouse.jpg?v=1736116980'],
+    images: ['https://talk.tidbits.com/uploads/default/original/2X/0/074e125a63b364af957e1680b763d7f3ffdf2b94.jpeg'],
     specs: {
       storage: 'N/A',
       color: 'White',
@@ -273,7 +273,7 @@ export const products: Product[] = [
     name: 'Apple Keyboard',
     description: 'Low-profile, Bluetooth-enabled magic keyboard.',
     price: 99,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/magickeyboard.jpg?v=1736117004'],
+    images: ['https://i.roamcdn.net/hz/pi/listing-thumb-543w/26cd47a6d2522bc8fe665d3505e4671d/-/horizon-files-prod/pi/picture/q0gknkjd/032c92a16aa0d077f393f33ae38ccd57a3f84e5a.jpg'],
     specs: {
       storage: 'N/A',
       color: 'Silver',
@@ -287,7 +287,7 @@ export const products: Product[] = [
     name: 'Beats Studio Pro',
     description: 'Over-ear wireless headphones with noise cancelation.',
     price: 349,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/beatsstudiopro.jpg?v=1736117020'],
+    images: ['https://openbox.ca/cdn/shop/files/0_ac3dea8a-8095-4007-9e06-0aab24988f64_1200x.jpg?v=1750182606'],
     specs: {
       storage: 'N/A',
       color: 'Black',
@@ -301,7 +301,7 @@ export const products: Product[] = [
     name: 'Apple Watch SE 2nd Gen',
     description: 'Affordable Apple Watch with essential features.',
     price: 249,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/applewatchse2.jpg?v=1736117033'],
+    images: ['https://i0.wp.com/macdailynews.com/wp-content/uploads/2023/09/230912_apple_watch_se.png'],
     specs: {
       storage: '32GB',
       color: 'Silver',
@@ -315,7 +315,7 @@ export const products: Product[] = [
     name: 'Apple Watch Ultra',
     description: 'Rugged smartwatch built for adventure and endurance.',
     price: 799,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/applewatchultra.jpg?v=1736117041'],
+    images: ['https://images.priceoye.pk/apple-watch-ultra-49mm-pakistan-priceoye-uovmj-500x500.webp'],
     specs: {
       storage: '64GB',
       color: 'Titanium',
@@ -329,7 +329,7 @@ export const products: Product[] = [
     name: 'iPhone 12 Pro',
     description: 'Triple-camera system with LiDAR and ProRAW features.',
     price: 899,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/iphone12pro.jpg?v=1736117055'],
+    images: ['https://images.priceoye.pk/apple-iphone-12-pro-pakistan-priceoye-2mmvz.jpg'],
     specs: {
       storage: '256GB',
       color: 'Pacific Blue',
@@ -343,7 +343,7 @@ export const products: Product[] = [
     name: 'MacBook Air M2',
     description: 'Slim and light notebook with all-day battery and performance.',
     price: 1199,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/macbookairm2.jpg?v=1736117067'],
+    images: ['https://ivenus.in/wp-content/uploads/2025/01/0-768x768.jpeg'],
     specs: {
       storage: '512GB SSD',
       color: 'Midnight',
@@ -357,7 +357,7 @@ export const products: Product[] = [
     name: 'iPhone 15 Plus',
     description: 'Big display iPhone with long battery and enhanced camera.',
     price: 899,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/iphone15plus.jpg?v=1736117080'],
+    images: ['https://appleshop.com.pk/wp-content/uploads/2023/09/duty-paid-iphone-15-price-in-pakistan.jpg'],
     specs: {
       storage: '256GB',
       color: 'Blue',
@@ -371,7 +371,7 @@ export const products: Product[] = [
     name: 'iMac M3 24-inch',
     description: 'All-in-one desktop with vibrant display and M3 chip.',
     price: 1299,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/imacm3.jpg?v=1736117090'],
+    images: ['https://www.thundermac.com/wp-content/uploads/2023/11/imac-m3-16gb-512gb-10c-01-300x300.png'],
     specs: {
       storage: '256GB SSD',
       color: 'Green',
@@ -385,7 +385,7 @@ export const products: Product[] = [
     name: 'iPad Mini 6',
     description: 'Small, powerful iPad for reading and portability.',
     price: 499,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/ipadmini6.jpg?v=1736117100'],
+    images: ['https://static-01.daraz.pk/p/7730924ac95814a5621ee77d12b538c5.jpg'],
     specs: {
       storage: '64GB',
       color: 'Purple',
@@ -399,7 +399,7 @@ export const products: Product[] = [
     name: 'Apple Watch Series 9',
     description: 'Updated sensors, better screen, and fast charging.',
     price: 399,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/applewatch9.jpg?v=1736117112'],
+    images: ['https://jumbosouq.com/_next/image?url=https%3A%2F%2Fadmin.js.qa%2Fmedia%2Fcatalog%2Fproduct%2Fcache%2Fd0e7795d3d2f5a96879c0dedbcebc5d7%2F6%2F0%2F603001000002704v.jpg'],
     specs: {
       storage: '64GB',
       color: 'Pink',
@@ -413,7 +413,7 @@ export const products: Product[] = [
     name: 'AirPods Pro 2',
     description: 'Noise-canceling earbuds with spatial audio and improved fit.',
     price: 249,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/airpodspro2.jpg?v=1736117124'],
+    images: ['https://technoshop.pk/wp-content/uploads/2024/02/Apple-AirPods-Pro-2-Copy-White.jpg'],
     specs: {
       storage: 'N/A',
       color: 'White',
@@ -427,7 +427,7 @@ export const products: Product[] = [
     name: 'iPhone SE 3rd Gen',
     description: 'Budget iPhone with A15 chip and Touch ID.',
     price: 429,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/iphonese3.jpg?v=1736117132'],
+    images: ['https://appleshop.com.pk/wp-content/uploads/2020/04/iphone-se-family-select-2020-250x300.jpg'],
     specs: {
       storage: '128GB',
       color: 'Red',
@@ -455,7 +455,7 @@ export const products: Product[] = [
     name: 'Apple AirPods Max',
     description: 'High-end over-ear headphones with spatial audio.',
     price: 549,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/airpodsmax.jpg?v=1736117155'],
+    images: ['https://shopivate.pk/wp-content/uploads/2023/05/1000135015.jpg'],
     specs: {
       storage: 'N/A',
       color: 'Sky Blue',
@@ -469,7 +469,7 @@ export const products: Product[] = [
     name: 'Apple 20W USB-C Adapter',
     description: 'Fast charging wall adapter for iPhone and iPad.',
     price: 19,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/20wadapter.jpg?v=1736117165'],
+    images: ['https://static-01.daraz.pk/p/fc4bf6b07ad91f472a4712cd4db6f28d.jpg'],
     specs: {
       storage: 'N/A',
       color: 'White',
@@ -483,7 +483,7 @@ export const products: Product[] = [
     name: 'Apple Watch Band Sport Loop',
     description: 'Breathable and lightweight Apple Watch strap.',
     price: 49,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/sportloop.jpg?v=1736117177'],
+    images: ['https://mac-more.co.ke/wp-content/uploads/2024/02/Apple_Watch_SE_GPS_44mm_Silver_Aluminum_Winter_Blue_Sport_Loop_PDP_Image_2023_Position-1__WWEN.jpg'],
     specs: {
       storage: 'N/A',
       color: 'Storm Blue',
@@ -497,7 +497,7 @@ export const products: Product[] = [
     name: 'Magic Trackpad',
     description: 'Touch-sensitive surface for gestures and productivity.',
     price: 129,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/magictrackpad.jpg?v=1736117188'],
+    images: ['https://i.ebayimg.com/images/g/t~gAAOSwd7Bho-1k/s-l1200.jpg'],
     specs: {
       storage: 'N/A',
       color: 'White',
@@ -511,7 +511,7 @@ export const products: Product[] = [
     name: 'Apple Studio Display',
     description: '5K Retina monitor with Thunderbolt support.',
     price: 1599,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/studiodisplay.jpg?v=1736117200'],
+    images: ['https://m.media-amazon.com/images/I/71Xc+x-QyiL.jpg'],
     specs: {
       storage: 'N/A',
       color: 'Silver',
@@ -525,7 +525,7 @@ export const products: Product[] = [
     name: 'iPhone 14',
     description: 'Dual-camera iPhone with A15 chip and crash detection.',
     price: 799,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/iphone14.jpg?v=1736117211'],
+    images: ['https://applehub.pk/wp-content/uploads/2022/09/iphone-14-starlight-1.jpg'],
     specs: {
       storage: '128GB',
       color: 'Midnight',
@@ -539,7 +539,7 @@ export const products: Product[] = [
     name: 'Apple Watch Charger Magnetic',
     description: 'Official magnetic charging cable for Apple Watch.',
     price: 29,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/watchcharger.jpg?v=1736117220'],
+    images: ['https://www.tjmart.pk/image/cache/catalog/products/Apple-Watch-USB-Magnetic-Charging-Cable-Copy/item_4319548_181-800x800.jpg'],
     specs: {
       storage: 'N/A',
       color: 'White',
@@ -553,7 +553,7 @@ export const products: Product[] = [
     name: 'Apple Silicone Case',
     description: 'Smooth silicone case designed to fit iPhone models perfectly.',
     price: 49,
-    images: ['https://cdn.shopify.com/s/files/1/0869/3327/4960/files/siliconecase.jpg?v=1736117233'],
+    images: ['https://casedrip.pk/cdn/shop/files/4320CE39-787D-48FC-9E56-95F80E82D309.jpg?v=1741968223'],
     specs: {
       storage: 'N/A',
       color: 'Chalk Pink',
@@ -563,3 +563,4 @@ export const products: Product[] = [
     stock: 220,
   }
 ];
+
