@@ -98,7 +98,7 @@ export const products: Product[] = [
       display: '6.3-inch Super Retina XDR',
     },
     features: ['A19 Chip', 'Under-display Camera', 'Haptic Buttons', 'Periscope Lens'],
-    stock: 0,
+    stock: 39,
   },
   {
     id: 'iphone-xs-max',
@@ -357,7 +357,7 @@ export const products: Product[] = [
     name: 'iPhone 15 Plus',
     description: 'Big display iPhone with long battery and enhanced camera.',
     price: 899,
-    images: ['https://appleshop.com.pk/wp-content/uploads/2023/09/duty-paid-iphone-15-price-in-pakistan.jpg'],
+    images: ['https://images.priceoye.pk/media/apple-iphone-15-plus/apple-iphone-15-plus-jf1nw.jpg'],
     specs: {
       storage: '256GB',
       color: 'Blue',
@@ -371,7 +371,7 @@ export const products: Product[] = [
     name: 'iMac M3 24-inch',
     description: 'All-in-one desktop with vibrant display and M3 chip.',
     price: 1299,
-    images: ['https://www.thundermac.com/wp-content/uploads/2023/11/imac-m3-16gb-512gb-10c-01-300x300.png'],
+    images: ['https://www.apple.com/newsroom/images/2023/10/apple-supercharges-24-inch-imac-with-new-m3-chip/article/Apple-iMac-M3-color-matched-accessories-231030_big.jpg.large.jpg'],
     specs: {
       storage: '256GB SSD',
       color: 'Green',
@@ -427,7 +427,7 @@ export const products: Product[] = [
     name: 'iPhone SE 3rd Gen',
     description: 'Budget iPhone with A15 chip and Touch ID.',
     price: 429,
-    images: ['https://appleshop.com.pk/wp-content/uploads/2020/04/iphone-se-family-select-2020-250x300.jpg'],
+    images: ['https://www.getorchard.com/cdn/shop/products/iphone-se-2022.png'],
     specs: {
       storage: '128GB',
       color: 'Red',
